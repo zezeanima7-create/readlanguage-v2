@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#f7f8fc">
+  <title>Lição | ReadLanguage</title><link rel="stylesheet" href="style.css">
+</head>
+<body class="lesson-page">
+  <header class="topbar lesson-topbar"><a class="back-link" href="index.html" aria-label="Voltar ao curso">←</a><div class="lesson-progress-wrap"><div class="progress-track"><div id="lessonProgress" class="progress-fill"></div></div><span id="questionCounter">1 / 10</span></div><span class="hearts">♥ <b id="heartsCount">5</b></span></header>
+  <main class="lesson-shell">
+    <div class="lesson-kicker"><span id="lessonFlag">🇺🇸</span><span id="lessonCourseName">Inglês • Fundamentos</span></div>
+    <div class="lesson-content" id="lessonContent">
+      <p class="eyebrow">ESCUTE, LEIA E RESPONDA</p><h1 id="lessonHeading">Como se diz...</h1>
+      <div class="word-card"><span class="word-sparkle">✦</span><div id="promptWord" class="prompt-word">Hello</div><div id="promptHint" class="prompt-hint">Escolha a tradução correta.</div><button id="speakButton" class="sound-button" type="button" aria-label="Ouvir palavra">🔊 Ouvir</button></div>
+      <div id="answerOptions" class="answer-options"></div>
+      <p id="answerFeedback" class="answer-feedback" aria-live="polite"></p>
+      <div class="lesson-actions"><a class="btn btn-soft" href="index.html">Sair da lição</a><button id="verifyButton" class="btn btn-primary verify-button" type="button" disabled>Verificar resposta <span>✓</span></button><button id="continueButton" class="btn btn-primary hidden" type="button">Continuar <span>→</span></button></div>
+    </div>
+    <section id="lessonComplete" class="completion-card card hidden"><div class="completion-emoji">🎉</div><p class="eyebrow">LIÇÃO CONCLUÍDA</p><h1>Mandou bem!</h1><p id="completionText" class="muted">Você terminou sua lição.</p><div class="completion-reward">⚡ <strong id="earnedXp">+0 XP</strong></div><a class="btn btn-primary btn-block" href="index.html">Voltar para a trilha →</a></section>
+  </main>
+  <div id="feedbackBar" class="feedback-bar hidden"><div><strong id="feedbackBarTitle">Muito bem!</strong><p id="feedbackBarText">Resposta registrada.</p></div></div>
+  <script src="animation.js"></script><script src="app.js"></script>
+</body>
+</html>

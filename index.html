@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7f8fc">
+  <meta name="description" content="ReadLanguage — aprenda idiomas um passo de cada vez.">
+  <title>ReadLanguage</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="ReadLanguage início"><span class="brand-mark">R</span><span>Read<span class="brand-green">Language</span></span></a>
+    <div class="top-actions"><span id="headerStreak" class="streak-pill">🔥 <b>0</b></span><button id="logoutButton" class="text-button hidden" type="button">Sair</button></div>
+  </header>
+
+  <main class="shell">
+    <section id="authScreen" class="auth-layout">
+      <div class="auth-art card">
+        <div class="art-bubble bubble-one">¡Hola!</div><div class="art-bubble bubble-two">Hello!</div><div class="art-bubble bubble-three">こんにちは</div>
+        <div class="mascot" aria-hidden="true"><span class="mascot-eye eye-left"></span><span class="mascot-eye eye-right"></span><span class="mascot-smile"></span></div>
+        <p class="eyebrow">UM PASSO POR DIA</p><h1>Seu próximo idioma começa aqui.</h1><p class="muted">Aprenda com lições curtas, pratique e acompanhe seu progresso.</p>
+      </div>
+      <div class="auth-panel card">
+        <div class="auth-tabs"><button id="loginTab" class="auth-tab active" type="button">Entrar</button><button id="registerTab" class="auth-tab" type="button">Criar conta</button></div>
+        <form id="loginForm" class="auth-form">
+          <h2>Que bom ver você!</h2><p class="muted">Entre para continuar aprendendo.</p>
+          <label for="loginEmail">E-mail</label><input id="loginEmail" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required>
+          <label for="loginPassword">Senha</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Sua senha de demonstração" minlength="4" required>
+          <button class="btn btn-primary btn-block" type="submit">Entrar <span>→</span></button><p id="loginMessage" class="form-message" aria-live="polite"></p>
+        </form>
+        <form id="registerForm" class="auth-form hidden">
+          <h2>Crie sua conta</h2><p class="muted">Prepare seu espaço de estudos.</p>
+          <label for="registerName">Como quer ser chamado?</label><input id="registerName" name="name" autocomplete="nickname" maxlength="40" placeholder="Seu nome" required>
+          <label for="registerEmail">E-mail</label><input id="registerEmail" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required>
+          <label for="registerPassword">Crie uma senha</label><input id="registerPassword" name="password" type="password" autocomplete="new-password" minlength="4" placeholder="Pelo menos 4 caracteres" required>
+          <button class="btn btn-primary btn-block" type="submit">Criar minha conta <span>→</span></button><p id="registerMessage" class="form-message" aria-live="polite"></p>
+        </form>
+        <p class="demo-note">Protótipo: seus dados ficam somente neste navegador. Não use uma senha importante ou real.</p>
+      </div>
+    </section>
+
+    <section id="setupScreen" class="card setup-card hidden">
+      <div class="setup-heading"><span class="eyebrow">PERSONALIZE SEU CURSO</span><h1>Vamos escolher seu caminho.</h1><p class="muted">Você pode mudar essas escolhas depois.</p></div>
+      <div class="setup-grid">
+        <div><label for="learningLanguage">Quero aprender</label><select id="learningLanguage" class="select-control"></select><p class="field-help">O idioma das palavras e dos exercícios.</p></div>
+        <div><label for="interfaceLanguage">Idioma da interface</label><select id="interfaceLanguage" class="select-control"><option value="pt-BR">Português (Brasil)</option><option value="en">English</option><option value="es">Español</option></select><p class="field-help">O idioma dos menus principais.</p></div>
+        <div><label for="dailyGoal">Meta diária</label><select id="dailyGoal" class="select-control"><option value="5">5 minutos — leve</option><option value="10" selected>10 minutos — equilibrada</option><option value="15">15 minutos — focada</option><option value="20">20 minutos — intensa</option></select><p class="field-help">Uma meta para manter a consistência.</p></div>
+      </div>
+      <button id="saveSetupButton" class="btn btn-primary btn-block">Salvar e ver minhas lições <span>→</span></button>
+    </section>
+
+    <section id="homeScreen" class="hidden">
+      <div class="welcome-row"><div><p class="eyebrow">SUA JORNADA</p><h1 id="welcomeTitle">Vamos aprender!</h1><p class="muted">Um pouco de prática já faz diferença.</p></div><button id="editCourseButton" class="btn btn-outline" type="button">⚙️ Configurar</button></div>
+      <div class="stats-grid"><article class="stat-card"><span class="stat-icon">⚡</span><span class="stat-label">Experiência</span><strong id="statXp">0 XP</strong></article><article class="stat-card"><span class="stat-icon">🔥</span><span class="stat-label">Sequência</span><strong id="statStreak">0 dias</strong></article><article class="stat-card"><span class="stat-icon">🎯</span><span class="stat-label">Acertos</span><strong id="statCorrect">0</strong></article></div>
+      <div class="course-layout"><section class="course-main card"><div class="section-heading"><div><p class="eyebrow">SEU CURSO</p><h2 id="courseTitle">Inglês para iniciantes</h2></div><span id="courseFlag" class="course-flag">🇺🇸</span></div><p class="muted">Siga a trilha, complete os desafios e desbloqueie a próxima etapa.</p><div id="lessonPath" class="lesson-path" aria-label="Trilha de lições"></div></section>
+      <aside class="side-column"><section class="side-card card"><span class="side-icon">🌱</span><h3>Pequenos passos</h3><p class="muted">Pratique com frequência e revise palavras que já encontrou.</p></section><section class="side-card card"><span class="side-icon">📚</span><h3>Seu vocabulário</h3><p><strong id="statLearned">0</strong> respostas corretas registradas</p><button id="reviewButton" class="btn btn-outline btn-block" type="button">Fazer revisão</button></section></aside></div>
+      <section class="settings-card card"><div><h3>Preferências</h3><p class="muted">Defina o idioma estudado e os textos da interface.</p></div><div class="settings-fields"><label>Idioma de estudo<select id="homeLearningLanguage" class="select-control"></select></label><label>Interface<select id="homeInterfaceLanguage" class="select-control"><option value="pt-BR">Português (Brasil)</option><option value="en">English</option><option value="es">Español</option></select></label><button id="applyHomeSettings" class="btn btn-primary" type="button">Aplicar</button></div></section>
+    </section>
+  </main>
+  <footer class="footer"><span>ReadLanguage</span><span>Aprender leva tempo. Continue.</span></footer>
+  <script src="animation.js"></script><script src="app.js"></script>
+</body>
+</html>
