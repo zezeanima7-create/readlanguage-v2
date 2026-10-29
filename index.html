@@ -1,64 +1,666 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#f7f8fc">
-  <meta name="description" content="ReadLanguage — aprenda idiomas um passo de cada vez.">
-  <title>ReadLanguage</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#101b16">
+  <title>ReadLanguage Plus</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg: #101713;
+      --panel: #1a251e;
+      --green: #55e28a;
+      --text: #f4fff6;
+      --muted: #a6b9aa;
+      --border: #304438;
+      --red: #ff7777;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    button, input { font: inherit; }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-weight: bold;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .primary {
+      background: var(--green);
+      color: #102016;
+    }
+
+    .secondary {
+      background: #29382e;
+      color: white;
+      border: 1px solid var(--border);
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 7px 0 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #111a14;
+      color: white;
+      outline: none;
+    }
+
+    input:focus { border-color: var(--green); }
+
+    label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .brand span { color: var(--green); }
+
+    .online {
+      color: var(--green);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    main {
+      width: min(100% - 28px, 760px);
+      margin: 28px auto;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    h1 { font-size: 28px; margin-top: 0; }
+    h2 { font-size: 21px; }
+    p { line-height: 1.55; }
+    .muted { color: var(--muted); }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .tabs button { flex: 1; }
+
+    .message {
+      min-height: 22px;
+      color: var(--green);
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .message.error { color: var(--red); }
+
+    .lesson {
+      padding: 17px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin: 12px 0;
+      background: #141e17;
+    }
+
+    .lesson h3 { margin: 0 0 8px; }
+
+    .lesson button {
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .progress-bg {
+      background: #0c120e;
+      height: 10px;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .progress-bar {
+      background: var(--green);
+      height: 100%;
+      width: 0%;
+      transition: width .2s;
+    }
+
+    .hidden { display: none !important; }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .row button { flex: 1; }
+
+    .answer {
+      display: block;
+      width: 100%;
+      text-align: left;
+      margin: 8px 0;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 24px;
+    }
+
+    @media (max-width: 420px) {
+      .topbar { padding: 14px; }
+      .brand { font-size: 16px; }
+      main { margin-top: 18px; }
+      .panel { padding: 17px; }
+    }
+  </style>
 </head>
+
 <body>
   <header class="topbar">
-    <a class="brand" href="index.html" aria-label="ReadLanguage início"><span class="brand-mark">R</span><span>Read<span class="brand-green">Language</span></span></a>
-    <div class="top-actions"><span id="headerStreak" class="streak-pill">🔥 <b>0</b></span><button id="logoutButton" class="text-button hidden" type="button">Sair</button></div>
+    <div class="brand">ReadLanguage <span>Plus</span></div>
+    <div class="online" id="onlineCount">● Conectando...</div>
   </header>
 
-  <main class="shell">
-    <section id="authScreen" class="auth-layout">
-      <div class="auth-art card">
-        <div class="art-bubble bubble-one">¡Hola!</div><div class="art-bubble bubble-two">Hello!</div><div class="art-bubble bubble-three">こんにちは</div>
-        <div class="mascot" aria-hidden="true"><span class="mascot-eye eye-left"></span><span class="mascot-eye eye-right"></span><span class="mascot-smile"></span></div>
-        <p class="eyebrow">UM PASSO POR DIA</p><h1>Seu próximo idioma começa aqui.</h1><p class="muted">Aprenda com lições curtas, pratique e acompanhe seu progresso.</p>
-      </div>
-      <div class="auth-panel card">
-        <div class="auth-tabs"><button id="loginTab" class="auth-tab active" type="button">Entrar</button><button id="registerTab" class="auth-tab" type="button">Criar conta</button></div>
-        <form id="loginForm" class="auth-form">
-          <h2>Que bom ver você!</h2><p class="muted">Entre para continuar aprendendo.</p>
-          <label for="loginEmail">E-mail</label><input id="loginEmail" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required>
-          <label for="loginPassword">Senha</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Sua senha de demonstração" minlength="4" required>
-          <button class="btn btn-primary btn-block" type="submit">Entrar <span>→</span></button><p id="loginMessage" class="form-message" aria-live="polite"></p>
-        </form>
-        <form id="registerForm" class="auth-form hidden">
-          <h2>Crie sua conta</h2><p class="muted">Prepare seu espaço de estudos.</p>
-          <label for="registerName">Como quer ser chamado?</label><input id="registerName" name="name" autocomplete="nickname" maxlength="40" placeholder="Seu nome" required>
-          <label for="registerEmail">E-mail</label><input id="registerEmail" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required>
-          <label for="registerPassword">Crie uma senha</label><input id="registerPassword" name="password" type="password" autocomplete="new-password" minlength="4" placeholder="Pelo menos 4 caracteres" required>
-          <button class="btn btn-primary btn-block" type="submit">Criar minha conta <span>→</span></button><p id="registerMessage" class="form-message" aria-live="polite"></p>
-        </form>
-        <p class="demo-note">Protótipo: seus dados ficam somente neste navegador. Não use uma senha importante ou real.</p>
-      </div>
-    </section>
+  <main>
+    <section id="authScreen" class="panel">
+      <h1>Aprenda inglês de verdade.</h1>
+      <p class="muted">
+        Aprenda palavras, leia frases e avance no seu próprio ritmo.
+      </p>
 
-    <section id="setupScreen" class="card setup-card hidden">
-      <div class="setup-heading"><span class="eyebrow">PERSONALIZE SEU CURSO</span><h1>Vamos escolher seu caminho.</h1><p class="muted">Você pode mudar essas escolhas depois.</p></div>
-      <div class="setup-grid">
-        <div><label for="learningLanguage">Quero aprender</label><select id="learningLanguage" class="select-control"></select><p class="field-help">O idioma das palavras e dos exercícios.</p></div>
-        <div><label for="interfaceLanguage">Idioma da interface</label><select id="interfaceLanguage" class="select-control"><option value="pt-BR">Português (Brasil)</option><option value="en">English</option><option value="es">Español</option></select><p class="field-help">O idioma dos menus principais.</p></div>
-        <div><label for="dailyGoal">Meta diária</label><select id="dailyGoal" class="select-control"><option value="5">5 minutos — leve</option><option value="10" selected>10 minutos — equilibrada</option><option value="15">15 minutos — focada</option><option value="20">20 minutos — intensa</option></select><p class="field-help">Uma meta para manter a consistência.</p></div>
+      <div class="tabs">
+        <button id="loginTab" class="primary" type="button">Entrar</button>
+        <button id="registerTab" class="secondary" type="button">Criar conta</button>
       </div>
-      <button id="saveSetupButton" class="btn btn-primary btn-block">Salvar e ver minhas lições <span>→</span></button>
+
+      <form id="loginForm">
+        <label for="loginEmail">E-mail</label>
+        <input id="loginEmail" type="email" autocomplete="email"
+               placeholder="voce@email.com" required>
+
+        <label for="loginPassword">Senha</label>
+        <input id="loginPassword" type="password"
+               autocomplete="current-password" minlength="6"
+               placeholder="Sua senha" required>
+
+        <button class="primary" type="submit" style="width:100%">
+          Entrar na conta
+        </button>
+
+        <p style="text-align:center">
+          <button id="forgotButton" class="secondary" type="button">
+            Esqueci minha senha
+          </button>
+        </p>
+      </form>
+
+      <form id="registerForm" class="hidden">
+        <label for="registerName">Nome de exibição</label>
+        <input id="registerName" type="text" maxlength="60"
+               autocomplete="nickname" placeholder="Como quer ser chamado"
+               required>
+
+        <label for="registerEmail">E-mail</label>
+        <input id="registerEmail" type="email" autocomplete="email"
+               placeholder="voce@email.com" required>
+
+        <label for="registerPassword">Crie uma senha</label>
+        <input id="registerPassword" type="password"
+               autocomplete="new-password" minlength="6"
+               placeholder="Mínimo de 6 caracteres" required>
+
+        <button class="primary" type="submit" style="width:100%">
+          Criar minha conta
+        </button>
+      </form>
+
+      <p id="authMessage" class="message" role="status"></p>
+      <p class="muted" style="font-size:12px">
+        Sua conta é autenticada pelo Supabase. Nunca compartilhe sua senha.
+      </p>
     </section>
 
     <section id="homeScreen" class="hidden">
-      <div class="welcome-row"><div><p class="eyebrow">SUA JORNADA</p><h1 id="welcomeTitle">Vamos aprender!</h1><p class="muted">Um pouco de prática já faz diferença.</p></div><button id="editCourseButton" class="btn btn-outline" type="button">⚙️ Configurar</button></div>
-      <div class="stats-grid"><article class="stat-card"><span class="stat-icon">⚡</span><span class="stat-label">Experiência</span><strong id="statXp">0 XP</strong></article><article class="stat-card"><span class="stat-icon">🔥</span><span class="stat-label">Sequência</span><strong id="statStreak">0 dias</strong></article><article class="stat-card"><span class="stat-icon">🎯</span><span class="stat-label">Acertos</span><strong id="statCorrect">0</strong></article></div>
-      <div class="course-layout"><section class="course-main card"><div class="section-heading"><div><p class="eyebrow">SEU CURSO</p><h2 id="courseTitle">Inglês para iniciantes</h2></div><span id="courseFlag" class="course-flag">🇺🇸</span></div><p class="muted">Siga a trilha, complete os desafios e desbloqueie a próxima etapa.</p><div id="lessonPath" class="lesson-path" aria-label="Trilha de lições"></div></section>
-      <aside class="side-column"><section class="side-card card"><span class="side-icon">🌱</span><h3>Pequenos passos</h3><p class="muted">Pratique com frequência e revise palavras que já encontrou.</p></section><section class="side-card card"><span class="side-icon">📚</span><h3>Seu vocabulário</h3><p><strong id="statLearned">0</strong> respostas corretas registradas</p><button id="reviewButton" class="btn btn-outline btn-block" type="button">Fazer revisão</button></section></aside></div>
-      <section class="settings-card card"><div><h3>Preferências</h3><p class="muted">Defina o idioma estudado e os textos da interface.</p></div><div class="settings-fields"><label>Idioma de estudo<select id="homeLearningLanguage" class="select-control"></select></label><label>Interface<select id="homeInterfaceLanguage" class="select-control"><option value="pt-BR">Português (Brasil)</option><option value="en">English</option><option value="es">Español</option></select></label><button id="applyHomeSettings" class="btn btn-primary" type="button">Aplicar</button></div></section>
+      <div class="panel">
+        <p class="muted">SEU ESPAÇO DE APRENDIZADO</p>
+        <h1 id="welcomeTitle">Olá!</h1>
+        <p class="muted">Continue aprendendo um pouco a cada dia.</p>
+
+        <h2>Seu progresso</h2>
+        <div id="progressText">0 de 4 aulas concluídas</div>
+        <div class="progress-bg">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <div class="row">
+          <button id="resetProgress" class="secondary" type="button">
+            Reiniciar progresso
+          </button>
+          <button id="logoutButton" class="secondary" type="button">
+            Sair da conta
+          </button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Trilha de inglês</h2>
+        <p class="muted">Complete uma aula para liberar seu progresso.</p>
+        <div id="lessonPath"></div>
+      </div>
+
+      <div id="lessonScreen" class="panel hidden">
+        <h2 id="lessonTitle">Aula</h2>
+        <p id="lessonQuestion"></p>
+        <div id="lessonAnswers"></div>
+        <p id="lessonMessage" class="message" role="status"></p>
+        <button id="backButton" class="secondary" type="button">
+          Voltar às aulas
+        </button>
+      </div>
     </section>
   </main>
-  <footer class="footer"><span>ReadLanguage</span><span>Aprender leva tempo. Continue.</span></footer>
-  <script src="animation.js"></script><script src="app.js"></script>
+
+  <footer>ReadLanguage Plus · Aprenda no seu ritmo</footer>
+
+  <script>
+    /*
+      CONFIGURAÇÃO DO SUPABASE
+      A chave publishable pode ficar no navegador.
+      Nunca coloque uma chave sb_secret_ neste arquivo.
+    */
+    const SUPABASE_URL =
+      "https://nbuntcjbaewuhrdnimnq.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_XYETefH_CGyZUHQOp92c9w_Ya_WNdvA";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const $ = id => document.getElementById(id);
+
+    const lessons = [
+      {
+        title: "Aula 1 — Cumprimentos",
+        question: 'O que significa "Hello"?',
+        answers: ["Adeus", "Olá", "Obrigado", "Por favor"],
+        correct: 1,
+        explanation: '"Hello" significa "Olá".'
+      },
+      {
+        title: "Aula 2 — Apresentações",
+        question: 'O que significa "My name is Ana"?',
+        answers: [
+          "Onde está Ana?",
+          "Ana é minha amiga",
+          "Meu nome é Ana",
+          "Eu vi Ana"
+        ],
+        correct: 2,
+        explanation: '"My name is Ana" significa "Meu nome é Ana".'
+      },
+      {
+        title: "Aula 3 — Frases comuns",
+        question: 'O que significa "Thank you"?',
+        answers: ["Obrigado(a)", "Desculpe", "Bom dia", "Até logo"],
+        correct: 0,
+        explanation: '"Thank you" é uma forma de agradecer.'
+      },
+      {
+        title: "Aula 4 — Perguntas",
+        question: 'O que significa "How are you?"?',
+        answers: [
+          "Qual é seu nome?",
+          "Quantos anos você tem?",
+          "Onde você mora?",
+          "Como você está?"
+        ],
+        correct: 3,
+        explanation: '"How are you?" pergunta como alguém está.'
+      }
+    ];
+
+    let currentUser = null;
+    let currentLesson = 0;
+    let presenceChannel = null;
+    let presenceHeartbeat = null;
+
+    function showMessage(message, error = false) {
+      $("authMessage").textContent = message;
+      $("authMessage").classList.toggle("error", error);
+    }
+
+    function showAuthTab(tab) {
+      const registering = tab === "register";
+
+      $("loginForm").classList.toggle("hidden", registering);
+      $("registerForm").classList.toggle("hidden", !registering);
+
+      $("loginTab").className = registering ? "secondary" : "primary";
+      $("registerTab").className = registering ? "primary" : "secondary";
+
+      showMessage("");
+    }
+
+    $("loginTab").addEventListener("click", () => showAuthTab("login"));
+    $("registerTab").addEventListener("click", () => showAuthTab("register"));
+
+    function progressKey() {
+      return currentUser ? "rlplus_progress_" + currentUser.id : "";
+    }
+
+    function getProgress() {
+      try {
+        return JSON.parse(localStorage.getItem(progressKey()) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function saveProgress(progress) {
+      localStorage.setItem(progressKey(), JSON.stringify(progress));
+      renderLessons();
+    }
+
+    function renderLessons() {
+      const progress = getProgress();
+      $("progressText").textContent =
+        progress.length + " de " + lessons.length + " aulas concluídas";
+      $("progressBar").style.width =
+        (progress.length / lessons.length * 100) + "%";
+
+      $("lessonPath").replaceChildren();
+
+      lessons.forEach((lesson, index) => {
+        const done = progress.includes(index);
+        const card = document.createElement("div");
+        card.className = "lesson";
+
+        const heading = document.createElement("h3");
+        heading.textContent = (done ? "✅ " : "📘 ") + lesson.title;
+
+        const description = document.createElement("p");
+        description.className = "muted";
+        description.textContent = done
+          ? "Aula concluída"
+          : "Pratique inglês nesta aula.";
+
+        const button = document.createElement("button");
+        button.className = "primary";
+        button.type = "button";
+        button.textContent = done ? "Revisar aula" : "Começar aula";
+        button.addEventListener("click", () => openLesson(index));
+
+        card.append(heading, description, button);
+        $("lessonPath").appendChild(card);
+      });
+    }
+
+    function openLesson(index) {
+      currentLesson = index;
+      const lesson = lessons[index];
+
+      $("lessonScreen").classList.remove("hidden");
+      $("lessonTitle").textContent = lesson.title;
+      $("lessonQuestion").textContent = lesson.question;
+      $("lessonMessage").textContent = "";
+      $("lessonAnswers").replaceChildren();
+
+      lesson.answers.forEach((answer, answerIndex) => {
+        const button = document.createElement("button");
+        button.className = "secondary answer";
+        button.type = "button";
+        button.textContent = answer;
+        button.addEventListener("click", () => checkAnswer(answerIndex));
+        $("lessonAnswers").appendChild(button);
+      });
+
+      $("lessonScreen").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function checkAnswer(answerIndex) {
+      const lesson = lessons[currentLesson];
+
+      if (answerIndex === lesson.correct) {
+        $("lessonMessage").textContent = "Muito bem! " + lesson.explanation;
+
+        const progress = getProgress();
+        if (!progress.includes(currentLesson)) {
+          progress.push(currentLesson);
+          saveProgress(progress);
+        }
+      } else {
+        $("lessonMessage").textContent =
+          "Ainda não! Tente novamente e confira o significado das palavras.";
+      }
+    }
+
+    $("backButton").addEventListener("click", () => {
+      $("lessonScreen").classList.add("hidden");
+      $("lessonPath").scrollIntoView({ behavior: "smooth" });
+    });
+
+    $("resetProgress").addEventListener("click", () => {
+      if (!currentUser) return;
+
+      if (confirm("Quer realmente reiniciar o progresso das aulas?")) {
+        saveProgress([]);
+        $("lessonScreen").classList.add("hidden");
+      }
+    });
+
+    async function showLoggedIn(user) {
+      currentUser = user;
+
+      $("authScreen").classList.add("hidden");
+      $("homeScreen").classList.remove("hidden");
+      $("welcomeTitle").textContent =
+        "Olá, " + (user.user_metadata?.display_name || user.email || "estudante") + "!";
+
+      renderLessons();
+      startPresence();
+    }
+
+    async function showLoggedOut() {
+      currentUser = null;
+      stopPresence();
+
+      $("authScreen").classList.remove("hidden");
+      $("homeScreen").classList.add("hidden");
+      $("lessonScreen").classList.add("hidden");
+      $("onlineCount").textContent = "● Conectando...";
+    }
+
+    $("registerForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      showMessage("Criando sua conta...");
+
+      const name = $("registerName").value.trim();
+      const email = $("registerEmail").value.trim();
+      const password = $("registerPassword").value;
+
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { display_name: name }
+        }
+      });
+
+      if (error) {
+        showMessage(error.message, true);
+        return;
+      }
+
+      if (data.session) {
+        await showLoggedIn(data.user);
+      } else {
+        showMessage(
+          "Conta criada! Confira seu e-mail para confirmar o cadastro e depois entre."
+        );
+        showAuthTab("login");
+        $("loginEmail").value = email;
+      }
+    });
+
+    $("loginForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      showMessage("Entrando...");
+
+      const email = $("loginEmail").value.trim();
+      const password = $("loginPassword").value;
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        showMessage("Não foi possível entrar: " + error.message, true);
+        return;
+      }
+
+      await showLoggedIn(data.user);
+    });
+
+    $("forgotButton").addEventListener("click", async () => {
+      const email = $("loginEmail").value.trim();
+
+      if (!email) {
+        showMessage("Digite seu e-mail no campo acima.", true);
+        return;
+      }
+
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + window.location.pathname
+      });
+
+      if (error) {
+        showMessage(error.message, true);
+      } else {
+        showMessage("Se a recuperação estiver habilitada, você receberá um e-mail.");
+      }
+    });
+
+    $("logoutButton").addEventListener("click", async () => {
+      const { error } = await supabaseClient.auth.signOut();
+
+      if (error) {
+        alert("Erro ao sair: " + error.message);
+        return;
+      }
+
+      await showLoggedOut();
+      showMessage("Você saiu da conta.");
+    });
+
+    async function startPresence() {
+      stopPresence();
+
+      presenceChannel = supabaseClient.channel("readlanguage-plus-online", {
+        config: { presence: { key: currentUser.id } }
+      });
+
+      presenceChannel
+        .on("presence", { event: "sync" }, () => {
+          const state = presenceChannel.presenceState();
+          const uniqueUsers = Object.keys(state).length;
+          $("onlineCount").textContent = "● " + uniqueUsers + " online";
+        })
+        .subscribe(async status => {
+          if (status === "SUBSCRIBED" && currentUser) {
+            await presenceChannel.track({
+              online_at: new Date().toISOString()
+            });
+          }
+        });
+
+      presenceHeartbeat = setInterval(async () => {
+        if (presenceChannel && currentUser) {
+          await presenceChannel.track({
+            online_at: new Date().toISOString()
+          });
+        }
+      }, 30000);
+    }
+
+    function stopPresence() {
+      if (presenceHeartbeat) {
+        clearInterval(presenceHeartbeat);
+        presenceHeartbeat = null;
+      }
+
+      if (presenceChannel) {
+        supabaseClient.removeChannel(presenceChannel);
+        presenceChannel = null;
+      }
+    }
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        showLoggedIn(session.user);
+      } else if (event === "SIGNED_OUT") {
+        showLoggedOut();
+      }
+    });
+
+    async function initializeApp() {
+      const { data, error } = await supabaseClient.auth.getSession();
+
+      if (error) {
+        showMessage("Erro ao verificar a sessão: " + error.message, true);
+        return;
+      }
+
+      if (data.session?.user) {
+        await showLoggedIn(data.session.user);
+      } else {
+        await showLoggedOut();
+      }
+    }
+
+    initializeApp();
+  </script>
 </body>
 </html>
