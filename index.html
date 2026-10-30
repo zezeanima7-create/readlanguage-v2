@@ -202,6 +202,82 @@
       main { margin-top: 18px; }
       .panel { padding: 17px; }
     }
+  
+    /* Visual refresh */
+    :root{
+      --bg:#09130f;--panel:#14251c;--green:#62f09a;--text:#f2fff6;
+      --muted:#a8c0af;--border:#294737;--red:#ff8585;
+    }
+    body{
+      background:
+        radial-gradient(ellipse at 12% 0%,rgba(56,160,99,.19),transparent 36%),
+        radial-gradient(ellipse at 100% 35%,rgba(38,105,72,.12),transparent 34%),
+        var(--bg);
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+    }
+    .topbar{
+      position:sticky;top:0;z-index:10;
+      background:rgba(9,19,15,.92);backdrop-filter:blur(14px);
+      padding:17px max(18px,calc((100vw - 980px)/2));
+    }
+    .brand{font-size:21px;letter-spacing:-.6px}
+    .online{font-size:13px}
+    main{width:min(100% - 28px,820px);margin:30px auto 46px}
+    .panel{
+      background:linear-gradient(145deg,rgba(25,48,36,.97),rgba(16,31,23,.98));
+      border:1px solid rgba(111,185,135,.22);border-radius:24px;
+      padding:clamp(20px,5vw,38px);
+      box-shadow:0 18px 55px rgba(0,0,0,.20);
+    }
+    #authScreen{max-width:570px;margin:clamp(20px,7vh,70px) auto 36px;position:relative;overflow:hidden}
+    #authScreen:before{
+      content:"";position:absolute;width:220px;height:220px;border-radius:50%;
+      background:rgba(85,226,138,.09);filter:blur(2px);right:-90px;top:-105px;pointer-events:none
+    }
+    .auth-brandline{display:flex;align-items:center;gap:12px;margin-bottom:26px;position:relative}
+    .auth-logo{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;
+      background:linear-gradient(145deg,#6af3a0,#28b86a);color:#092015;font-size:27px;
+      box-shadow:0 8px 24px rgba(66,221,129,.18)}
+    .auth-brandline strong{font-size:17px;letter-spacing:-.3px}
+    .auth-brandline small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+    #authScreen h1{font-size:clamp(29px,6vw,39px);line-height:1.12;letter-spacing:-1.3px;margin:0 0 12px;max-width:460px}
+    #authScreen .auth-intro{font-size:15px;line-height:1.65;color:var(--muted);margin:0 0 25px;max-width:440px}
+    .tabs{gap:9px;margin-bottom:23px}
+    .tabs button{min-height:48px}
+    button{border-radius:14px;transition:transform .16s ease,filter .16s ease,background .16s ease}
+    button:active{transform:scale(.985)}
+    button:hover{filter:brightness(1.07)}
+    .primary{background:linear-gradient(135deg,#6af3a0,#43d982);color:#092015;box-shadow:0 7px 18px rgba(64,213,126,.12)}
+    .secondary{background:#20382a;color:#effff3;border:1px solid #355541}
+    #authScreen label{display:block;font-size:13px;font-weight:650;color:#c5d9ca;margin:12px 0 5px}
+    #authScreen input{
+      min-height:53px;padding:15px 16px;margin:5px 0 10px;border-radius:13px;
+      background:#0d1a12;border:1px solid #355541;color:var(--text)
+    }
+    #authScreen input::placeholder{color:#718879}
+    #authScreen input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(98,240,154,.12)}
+    #loginForm>button[type=submit],#registerForm>button[type=submit]{min-height:53px;margin-top:10px;font-size:15px}
+    #forgotButton{background:transparent;border:0;color:#b9d7c2;padding:10px 12px;font-weight:600}
+    .auth-divider{display:flex;align-items:center;gap:12px;color:#829b89;font-size:12px;margin:13px 0}
+    .auth-divider:before,.auth-divider:after{content:"";height:1px;background:#34503d;flex:1}
+    #googleLoginButton{min-height:52px;background:#f7faf8;color:#17231b;border:1px solid #d9e4dc;font-weight:700}
+    #googleLoginButton:before{content:"G";display:inline-grid;place-items:center;width:23px;height:23px;margin-right:10px;border-radius:50%;background:white;color:#4285f4;font-size:18px;font-weight:800}
+    #authMessage{min-height:22px;margin:13px 0 0}
+    .auth-security{display:flex;gap:9px;align-items:flex-start;margin-top:23px;padding-top:17px;border-top:1px solid #2b4635;font-size:12px;line-height:1.5}
+    .auth-security span{font-size:16px}
+    .unit-card{background:linear-gradient(145deg,#172b20,#122219);border-color:#2d4b38;padding:18px}
+    .lesson{background:#122219;border-color:#2d4b38}
+    .progress-bg{height:12px;background:#08120c}
+    .progress-bar{background:linear-gradient(90deg,#3acb78,#8affad)}
+    footer{padding:28px 18px 36px}
+    @media(max-width:480px){
+      .topbar{padding:14px 17px}
+      main{width:min(100% - 22px,820px);margin:18px auto 30px}
+      #authScreen{margin:18px auto 28px}
+      .panel{border-radius:21px}
+      .tabs button{padding:12px 9px;font-size:14px}
+    }
+
   </style>
 </head>
 
@@ -213,9 +289,13 @@
 
   <main>
     <section id="authScreen" class="panel">
-      <h1>Aprenda inglês de verdade.</h1>
-      <p class="muted">
-        Aprenda palavras, leia frases e avance no seu próprio ritmo.
+      <div class="auth-brandline">
+        <div class="auth-logo" aria-hidden="true">📚</div>
+        <div><strong>ReadLanguage Plus</strong><small>Seu próximo idioma começa aqui</small></div>
+      </div>
+      <h1>Aprenda um novo idioma no seu ritmo.</h1>
+      <p class="auth-intro">
+        Aulas rápidas, palavras úteis e desafios para transformar alguns minutos do seu dia em aprendizado.
       </p>
 
       <div class="tabs">
@@ -243,7 +323,7 @@
           </button>
         </p>
 
-        <div class="muted" style="text-align:center;margin:18px 0 10px">ou</div>
+        <div class="auth-divider">ou entre com</div>
         <button id="googleLoginButton" class="secondary" type="button" style="width:100%">
           Continuar com Google
         </button>
@@ -270,9 +350,7 @@
       </form>
 
       <p id="authMessage" class="message" role="status"></p>
-      <p class="muted" style="font-size:12px">
-        Sua conta é autenticada pelo Supabase. Nunca compartilhe sua senha.
-      </p>
+      <div class="auth-security"><span>🔒</span><span>Seus dados de acesso são protegidos. Nunca compartilhe sua senha ou códigos de verificação.</span></div>
     </section>
 
     <section id="homeScreen" class="hidden">
