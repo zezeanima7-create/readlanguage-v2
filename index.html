@@ -1249,7 +1249,7 @@
       switchMainTab("home");
 
       await syncProgressFromCloud();
-      renderLessons();
+      if(selectedSubject==="english") renderLessons(); else renderSubjectPath();
       loadStreak();
       renderLeague();
       setupProfile();renderMissions();
