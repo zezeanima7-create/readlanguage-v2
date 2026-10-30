@@ -313,6 +313,18 @@
 
 
     .course-heading{margin:24px 0 12px;font-size:18px}
+    .top-tools{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:12px 0}
+    .top-chip{border:1px solid #45634e;background:#172c21;color:#f4fff5;border-radius:15px;padding:9px 12px;font-weight:750}
+    .profile-avatar{font-size:24px}.subject-strip{display:flex;gap:8px;overflow-x:auto;padding:8px 2px;margin:10px 0 16px}
+    .subject-pill{white-space:nowrap;border:1px solid #42604b;background:#172a20;color:#eaffef;border-radius:18px;padding:10px 15px}
+    .subject-pill.active{background:#ff83ce;color:#31102a;border-color:#ffc0e7}
+    .mission-card{padding:16px;border-radius:19px;margin:12px 0;background:#182d22;border:1px solid #42664c}
+    .mission-reward{font-size:12px;color:#ffd68a;margin-top:8px}
+    .chest-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .chest{padding:14px 9px;border-radius:16px;background:#17291f;border:1px solid #526b57;text-align:center}
+    .chest button{width:100%;margin-top:8px}.inventory{padding:12px;border-radius:14px;background:#101e16;margin-top:14px}
+    .profile-panel{display:flex;gap:12px;align-items:center}
+
     .league-card{margin:16px 0;padding:18px;border:1px solid #49614f;border-radius:22px;background:linear-gradient(145deg,#172c21,#101c16)}
     .league-title{display:flex;align-items:center;gap:12px}.league-emblem{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:#263b2d;font-size:31px;border:2px solid #78917d}
     .league-list{display:grid;gap:7px;margin-top:14px}
@@ -359,6 +371,7 @@
       <button class="nav-button active" data-tab="home" type="button">⌂ <span>Início</span></button>
       <button id="adminTabButton" class="nav-button hidden" data-tab="logs" type="button">▤ <span>Logs</span></button>
       <button class="nav-button" data-tab="tasks" type="button">✓ <span>Tarefas</span></button>
+      <button class="nav-button" data-tab="missions" type="button">🎁 <span>Missões</span></button>
       <button class="nav-button" data-tab="league" type="button">🏆 <span>Ligas</span></button>
       <button class="nav-button" data-tab="policy" type="button">▣ <span>Política</span></button>
       <button class="nav-button" data-tab="credits" type="button">✦ <span>Créditos</span></button>
@@ -433,6 +446,24 @@
     </section>
 
     <section id="homeScreen" class="hidden">
+      <div class="top-tools">
+        <div class="top-chip">🔥 <span id="topStreak">0</span> dias</div>
+        <button class="top-chip" id="profileOpen" type="button"><span id="topAvatar" class="profile-avatar">🐛</span> <span id="topProfileName">Perfil</span></button>
+      </div>
+      <div class="panel hidden" id="profilePanel">
+        <div class="profile-panel"><span id="profilePreview" class="profile-avatar">🐛</span><div><h3>Personalizar perfil</h3><p class="muted">Escolha seu visual.</p></div></div>
+        <label for="profileStyle">Mais de 100 estilos de avatar</label><select id="profileStyle" class="locale-select"></select>
+        <button class="primary" id="saveProfile" type="button">Salvar visual</button>
+      </div>
+      <div class="panel">
+        <p class="eyebrow">ESCOLHA SUA MATÉRIA</p>
+        <div id="subjectStrip" class="subject-strip">
+          <button class="subject-pill active" data-subject="english">🇬🇧 Inglês</button>
+          <button class="subject-pill" data-subject="portuguese">📖 Português</button>
+          <button class="subject-pill" data-subject="math">➗ Matemática</button>
+          <button class="subject-pill" data-subject="physics">⚛️ Física</button>
+        </div>
+      </div>
       <div id="studentTab"> 
       <div class="panel" id="coursePicker">
         <p class="eyebrow">ESCOLHA SUA JORNADA</p>
@@ -495,18 +526,22 @@
   <div class="league-rules">15 participantes por liga · 1 semana por temporada.<br>1º–3º: promoção direta. 4º–6º: eliminatória entre os três; apenas um sobe. 7º–11º: permanecem. 12º–15º: rebaixamento, exceto na Liga Bronze, onde permanecem na Bronze.</div>
   <p class="league-rules">Esta tabela é uma demonstração local com competidores simulados. Ainda não é uma classificação compartilhada entre usuários reais.</p>
 </div></section>
-      <section id="tasksScreen" class="info-screen hidden">
-        <div class="panel">
-          <p class="eyebrow">ÁREA DE TAREFAS · READLANGUAGE</p>
-          <div class="task-intro"><div class="worm-face">🐛</div><div><h2>Missões da minhoca</h2><p class="muted">Sua jornada de aprendizagem em etapas.</p></div></div>
-          <div class="worm-path">
-            <article class="worm-task"><div class="worm-segment">📘</div><div><strong>Missão 1 — Aprender</strong><p>Conclua uma unidade na trilha de inglês.</p></div></article>
-            <article class="worm-task"><div class="worm-segment">🔁</div><div><strong>Missão 2 — Revisar</strong><p>Volte a uma unidade concluída e relembre as palavras.</p></div></article>
-            <article class="worm-task"><div class="worm-segment">🌱</div><div><strong>Missão 3 — Criar hábito</strong><p>Reserve alguns minutos para estudar hoje.</p></div></article>
-          </div>
-          <button class="primary" data-go-home type="button">Ir para minhas aulas</button>
+      <section id="tasksScreen" class="info-screen hidden"><div class="panel">
+        <p class="eyebrow">TAREFAS DO DIA</p><h2>Checklist de estudos</h2><p class="muted">As tarefas ficam aqui, separadas das missões e dos baús.</p>
+        <label class="task-line"><input type="checkbox" data-daily-task="lesson"> Concluir uma aula</label>
+        <label class="task-line"><input type="checkbox" data-daily-task="review"> Revisar cinco palavras</label>
+        <label class="task-line"><input type="checkbox" data-daily-task="practice"> Fazer uma atividade de outra matéria</label>
+      </div></section>
+      <section id="missionsScreen" class="info-screen hidden"><div class="panel">
+        <p class="eyebrow">MISSÕES DA MINHOCA 🐛</p><h2>Complete missões e abra baús!</h2>
+        <div class="worm-path">
+          <article class="worm-task"><div class="worm-segment">📘</div><div><strong>Aprendiz dedicado</strong><p>Conclua uma unidade.</p></div></article>
+          <article class="worm-task"><div class="worm-segment">🔁</div><div><strong>Mestre da revisão</strong><p>Revise palavras e pratique.</p></div></article>
+          <article class="worm-task"><div class="worm-segment">🌱</div><div><strong>Rotina de estudo</strong><p>Estude em dias diferentes.</p></div></article>
         </div>
-      </section>
+        <h3>Baús de recompensa</h3><div class="chest-grid" id="chestGrid"></div>
+        <div class="inventory" id="inventoryBox">💎 0 diamantes · 🧪 0 poções de XP · 🎨 0 skins</div>
+      </div></section>
       <section id="policyScreen" class="info-screen hidden">
         <div class="panel">
           <p class="eyebrow">TRANSPARÊNCIA</p><h2>Política e segurança</h2>
@@ -628,6 +663,7 @@
       }
       localStorage.setItem(streakKey(),JSON.stringify(d));
       $("streakCount").textContent=d.count||0;
+      if($("topStreak"))$("topStreak").textContent=d.count||0;
       $("streakMessage").textContent=d.activeDay===today?"Atividade de hoje registrada; atualização à meia-noite.":"Faça uma atividade hoje; sua ofensiva será atualizada à meia-noite.";
     }
     function loadStreak(){processStreakMidnight();}
@@ -829,11 +865,48 @@
     }
     function calculateLeagueRank(d){const all=Array.from({length:15},(_,i)=>i===0?d.points:Math.max(0,180-i*9+((d.tier*17+i*31)%73)));return all.filter(v=>v>d.points).length+1;}
 
+
+    const avatarStyles=["🐛","🐸","🦊","🐼","🐨","🐯","🦁","🐮","🐵","🐧","🐦","🦉","🦄","🐲","🐙","🦋","🐢","🐬","🦖","🐺"];
+    const profileKey=()=>currentUser?"rl_profile_"+currentUser.id:"";
+    function setupProfile(){
+      const sel=$("profileStyle");if(!sel)return;
+      sel.replaceChildren();
+      for(let i=0;i<120;i++){const op=document.createElement("option");op.value=String(i);op.textContent="Estilo "+(i+1)+" · "+avatarStyles[i%avatarStyles.length];sel.append(op);}
+      const saved=localStorage.getItem(profileKey())||"0";sel.value=saved;updateAvatar();
+    }
+    function updateAvatar(){const v=Number($("profileStyle")?.value||0),emoji=avatarStyles[v%avatarStyles.length];$("profilePreview").textContent=emoji;$("topAvatar").textContent=emoji;}
+    $("profileOpen").addEventListener("click",()=>$("profilePanel").classList.toggle("hidden"));
+    $("profileStyle").addEventListener("change",updateAvatar);
+    $("saveProfile").addEventListener("click",()=>{localStorage.setItem(profileKey(),$("profileStyle").value);updateAvatar();$("profilePanel").classList.add("hidden");});
+    document.querySelectorAll("[data-subject]").forEach(b=>b.addEventListener("click",()=>{
+      document.querySelectorAll("[data-subject]").forEach(x=>x.classList.toggle("active",x===b));
+      localStorage.setItem("rl_subject_"+(currentUser?.id||"guest"),b.dataset.subject);
+    }));
+    const chestTiers=[["Comum","📦",10,1,0],["Raro","🎁",25,2,1],["Épico","💜",60,4,2],["Lendário","👑",120,8,4]];
+    function rewardKey(){return currentUser?"rl_rewards_"+currentUser.id:"";}
+    function renderChests(){
+      if(!currentUser)return;let inv;try{inv=JSON.parse(localStorage.getItem(rewardKey())||'{"diamonds":0,"potions":0,"skins":0,"opened":[]}')}catch{inv={diamonds:0,potions:0,skins:0,opened:[]};}
+      $("chestGrid").replaceChildren();
+      chestTiers.forEach(([name,icon,diamonds,potions,skins])=>{
+        const card=document.createElement("div");card.className="chest";
+        const title=document.createElement("strong");title.textContent=icon+" "+name;
+        const desc=document.createElement("p");desc.textContent=diamonds+" diamantes · "+potions+" poção(ões) XP · "+skins+" skin(s)";
+        const btn=document.createElement("button");btn.className="primary";btn.textContent="Abrir baú";btn.addEventListener("click",()=>{
+          if(inv.opened.includes(name)){alert("Você já abriu este baú de demonstração.");return;}
+          inv.diamonds+=diamonds;inv.potions+=potions;inv.skins+=skins;inv.opened.push(name);
+          localStorage.setItem(rewardKey(),JSON.stringify(inv));renderChests();
+        });
+        card.append(title,desc,btn);$("chestGrid").append(card);
+      });
+      $("inventoryBox").textContent="💎 "+inv.diamonds+" diamantes · 🧪 "+inv.potions+" poções de XP · 🎨 "+inv.skins+" skins";
+    }
+
     function switchMainTab(tab) {
       const isAdmin = tab === "logs";
       $("studentTab").classList.toggle("hidden", tab !== "home");
       $("adminScreen").classList.toggle("hidden", !isAdmin);
       $("tasksScreen").classList.toggle("hidden", tab !== "tasks");
+      $("missionsScreen").classList.toggle("hidden",tab!=="missions");
       $("policyScreen").classList.toggle("hidden", tab !== "policy");
       $("creditsScreen").classList.toggle("hidden", tab !== "credits");
       $("aboutScreen").classList.toggle("hidden", tab !== "about");
@@ -989,6 +1062,8 @@
       renderLessons();
       loadStreak();
       renderLeague();
+      setupProfile();renderChests();
+      $("topProfileName").textContent=user.user_metadata?.display_name||"Perfil";
       await startPresence();
     }
 
@@ -1001,6 +1076,7 @@
       closeDrawer();
       $("adminScreen").classList.add("hidden");
       $("tasksScreen").classList.add("hidden");
+      $("missionsScreen").classList.add("hidden");
       $("policyScreen").classList.add("hidden");
       $("creditsScreen").classList.add("hidden");
       $("aboutScreen").classList.add("hidden");
