@@ -313,6 +313,13 @@
 
 
     .course-heading{margin:24px 0 12px;font-size:18px}
+    .league-card{margin:16px 0;padding:18px;border:1px solid #49614f;border-radius:22px;background:linear-gradient(145deg,#172c21,#101c16)}
+    .league-title{display:flex;align-items:center;gap:12px}.league-emblem{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:#263b2d;font-size:31px;border:2px solid #78917d}
+    .league-list{display:grid;gap:7px;margin-top:14px}
+    .league-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:12px;background:#0e1b14;border:1px solid #263e2e;font-size:13px}
+    .league-row.me{border:2px solid #65ed98;background:#1b3b28}
+    .league-rules{font-size:12px;color:#a8c0af;line-height:1.6;margin-top:14px}
+
     .course-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
     .course-tile{min-height:92px;display:flex;align-items:center;gap:12px;text-align:left;padding:14px;border-radius:19px;background:#172b23;border:1px solid #345744;color:#f2fff6;box-shadow:0 5px 0 #09130e}
     .course-tile .course-icon{font-size:30px}
@@ -352,6 +359,7 @@
       <button class="nav-button active" data-tab="home" type="button">⌂ <span>Início</span></button>
       <button id="adminTabButton" class="nav-button hidden" data-tab="logs" type="button">▤ <span>Logs</span></button>
       <button class="nav-button" data-tab="tasks" type="button">✓ <span>Tarefas</span></button>
+      <button class="nav-button" data-tab="league" type="button">🏆 <span>Ligas</span></button>
       <button class="nav-button" data-tab="policy" type="button">▣ <span>Política</span></button>
       <button class="nav-button" data-tab="credits" type="button">✦ <span>Créditos</span></button>
       <button class="nav-button" data-tab="about" type="button">ⓘ <span>Sobre</span></button>
@@ -440,7 +448,7 @@
         </div>
         <p class="course-note">Os outros cursos já aparecem no catálogo; as aulas serão liberadas conforme forem preparadas. Inglês é o curso jogável nesta versão.</p>
       </div>
-      <div class="streak-card"><div><div class="eyebrow">SUA OFENSIVA</div><div><span id="streakCount" class="streak-number">0</span> <span id="streakLabel">dias seguidos</span></div><small id="streakMessage">Faça uma atividade hoje para começar!</small></div><div class="streak-fire">🔥</div></div>
+      <div class="streak-card"><div><div class="eyebrow">SUA OFENSIVA · ATUALIZA ÀS 00:00</div><div><span id="streakCount" class="streak-number">0</span> <span id="streakLabel">dias seguidos</span></div><small id="streakMessage">Faça uma atividade hoje para começar!</small></div><div class="streak-fire">🔥</div></div>
       <div class="panel">
         <p class="muted">SEU ESPAÇO DE APRENDIZADO</p>
         <div class="mascot"><div class="mascot-face">🐛</div><div><h1 id="welcomeTitle">Olá!</h1><p class="muted">Vamos estudar um pouco hoje!</p></div></div>
@@ -480,6 +488,13 @@
       </div>
 
 
+      <section id="leagueScreen" class="info-screen hidden"><div class="league-card">
+  <div class="league-title"><div class="league-emblem" id="leagueIcon">🪨</div><div><p class="eyebrow">LIGA SEMANAL</p><h2 id="leagueName">Liga Couro</h2><small id="leagueWeek" class="muted">Temporada de 7 dias</small></div></div>
+  <p id="leagueStatus" class="muted">Ganhe pontos acertando questões.</p>
+  <div class="league-list" id="leagueRanking"></div>
+  <div class="league-rules">15 participantes por liga · 1 semana por temporada.<br>1º–3º: promoção direta. 4º–6º: eliminatória entre os três; apenas um sobe. 7º–11º: permanecem. 12º–15º: rebaixamento, exceto na Liga Bronze, onde permanecem na Bronze.</div>
+  <p class="league-rules">Esta tabela é uma demonstração local com competidores simulados. Ainda não é uma classificação compartilhada entre usuários reais.</p>
+</div></section>
       <section id="tasksScreen" class="info-screen hidden">
         <div class="panel">
           <p class="eyebrow">ÁREA DE TAREFAS · READLANGUAGE</p>
@@ -594,26 +609,29 @@
       const options = shuffle([{text:correct,ok:true},{text:wrong,ok:false},{text:"Não sei",ok:false},{text:"Nenhuma das opções",ok:false}]);
       return {question:'O que significa "'+english+'"?',options,explanation:'"'+english+'" significa "'+correct+'".'};
     }    function streakKey(){return currentUser?"rl_streak_"+currentUser.id:"";}
-    function updateStreak(){
+    function streakDate(date=new Date()){return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0")+"-"+String(date.getDate()).padStart(2,"0");}
+    function shiftDate(day,delta){const d=new Date(day+"T12:00:00");d.setDate(d.getDate()+delta);return streakDate(d);}
+    function readStreak(){try{return JSON.parse(localStorage.getItem(streakKey())||'{"count":0,"activeDay":"","processedDay":""}')}catch{return {count:0,activeDay:"",processedDay:""};}}
+    function markStreakActivity(){
       if(!currentUser)return;
-      const today=new Date().toLocaleDateString("en-CA");
-      let data={count:0,last:""};
-      try{data=JSON.parse(localStorage.getItem(streakKey())||'{"count":0,"last":""}')}catch{}
-      const yesterday=new Date(Date.now()-86400000).toLocaleDateString("en-CA");
-      if(data.last!==today){data.count=data.last===yesterday?Number(data.count||0)+1:1;data.last=today;localStorage.setItem(streakKey(),JSON.stringify(data))}
-      $("streakCount").textContent=data.count||0;
-      $("streakMessage").textContent="Continue estudando para manter sua sequência!";
+      const d=readStreak();d.activeDay=streakDate();localStorage.setItem(streakKey(),JSON.stringify(d));loadStreak();
     }
-    function loadStreak(){
+    function processStreakMidnight(){
       if(!currentUser)return;
-      let data={count:0,last:""};
-      try{data=JSON.parse(localStorage.getItem(streakKey())||'{"count":0,"last":""}')}catch{}
-      const today=new Date().toLocaleDateString("en-CA");
-      const yesterday=new Date(Date.now()-86400000).toLocaleDateString("en-CA");
-      if(data.last!==today&&data.last!==yesterday)data.count=0;
-      $("streakCount").textContent=data.count||0;
-      $("streakMessage").textContent=data.last===today?"Ofensiva mantida hoje!":"Faça uma atividade hoje para manter sua ofensiva.";
+      const d=readStreak(),today=streakDate();
+      if(!d.processedDay)d.processedDay=shiftDate(today,-1);
+      while(d.processedDay<today){
+        const dayToClose=d.processedDay;
+        if(d.activeDay===dayToClose)d.count=Number(d.count||0)+1;
+        else if(d.count>0 && d.activeDay!==shiftDate(dayToClose,-1))d.count=0;
+        d.processedDay=shiftDate(dayToClose,1);
+      }
+      localStorage.setItem(streakKey(),JSON.stringify(d));
+      $("streakCount").textContent=d.count||0;
+      $("streakMessage").textContent=d.activeDay===today?"Atividade de hoje registrada; atualização à meia-noite.":"Faça uma atividade hoje; sua ofensiva será atualizada à meia-noite.";
     }
+    function loadStreak(){processStreakMidnight();}
+    function streakMidnightWatcher(){processStreakMidnight();setTimeout(streakMidnightWatcher,30000);}
     function renderLessons() {
       const progress = getProgress();
       const done = progress.filter(x => x.startsWith("u")).length;
@@ -782,6 +800,35 @@
       renderLessons();
     });
 
+
+    const leagueNames=["Couro","Carvão","Bronze","Cobre","Ferro","Ouro","Esmeralda","Rubi","Redstone","Lápis-lazúli","Quartzo","Diamante","Netherita","Netherita Bruta","Bedrock"];
+    const leagueIcons=["🟫","⚫","🥉","🟠","⚙️","🥇","💚","❤️","🟥","🔵","⚪","💎","🟣","🪨","⬛"];
+    function leagueKey(){return currentUser?"rl_league_"+currentUser.id:"";}
+    function getLeague(){let d;try{d=JSON.parse(localStorage.getItem(leagueKey())||"null")}catch{}if(!d){d={tier:0,points:0,weekStart:Date.now(),lastResult:""};localStorage.setItem(leagueKey(),JSON.stringify(d));}return d;}
+    function saveLeague(d){localStorage.setItem(leagueKey(),JSON.stringify(d));}
+    function addLeaguePoints(n){if(!currentUser)return;const d=getLeague();d.points=(d.points||0)+n;saveLeague(d);renderLeague();}
+    function renderLeague(){
+      if(!currentUser)return;
+      const d=getLeague(),elapsed=Date.now()-d.weekStart,weekMs=7*24*60*60*1000;
+      if(elapsed>=weekMs){const rank=calculateLeagueRank(d);if(rank<=3&&d.tier<14)d.tier++;else if(rank>=4&&rank<=6){d.lastResult="Eliminatória: disputa simulada";if(Math.random()<1/3&&d.tier<14)d.tier++;}else if(rank>=12&&d.tier>0)d.tier--;d.points=0;d.weekStart=Date.now();saveLeague(d);}
+      const tier=d.tier||0,rank=calculateLeagueRank(d);
+      $("leagueName").textContent="Liga "+leagueNames[tier];$("leagueIcon").textContent=leagueIcons[tier];
+      const days=Math.max(0,7-Math.floor((Date.now()-d.weekStart)/86400000));
+      $("leagueWeek").textContent="Temporada · "+days+" dia(s) restante(s)";
+      $("leagueStatus").textContent="Seus pontos: "+d.points+" · Posição: "+rank+"º de 15";
+      const rows=[];
+      for(let i=0;i<15;i++){
+        let points=i===0?d.points:Math.max(0,180-i*9+((tier*17+i*31)%73));
+        rows.push({name:i===0?"Você":"Aventureiro "+String(i).padStart(2,"0"),points,me:i===0});
+      }
+      rows.sort((a,b)=>b.points-a.points);
+      const myRank=rows.findIndex(x=>x.me)+1;
+      $("leagueStatus").textContent="Seus pontos: "+d.points+" · Posição: "+myRank+"º de 15";
+      $("leagueRanking").replaceChildren();
+      rows.forEach((x,i)=>{const el=document.createElement("div");el.className="league-row"+(x.me?" me":"");const name=document.createElement("strong");name.textContent=(i+1)+"º · "+x.name;const pts=document.createElement("span");pts.textContent=x.points+" XP";el.append(name,pts);$("leagueRanking").append(el);});
+    }
+    function calculateLeagueRank(d){const all=Array.from({length:15},(_,i)=>i===0?d.points:Math.max(0,180-i*9+((d.tier*17+i*31)%73)));return all.filter(v=>v>d.points).length+1;}
+
     function switchMainTab(tab) {
       const isAdmin = tab === "logs";
       $("studentTab").classList.toggle("hidden", tab !== "home");
@@ -790,6 +837,8 @@
       $("policyScreen").classList.toggle("hidden", tab !== "policy");
       $("creditsScreen").classList.toggle("hidden", tab !== "credits");
       $("aboutScreen").classList.toggle("hidden", tab !== "about");
+      $("leagueScreen").classList.toggle("hidden",tab!=="league");
+      if(tab==="league")renderLeague();
       const siteTexts={
       pt:{home:"Início",tasks:"Tarefas",policy:"Política",credits:"Créditos",about:"Sobre",streak:"dias seguidos"},
       en:{home:"Home",tasks:"Tasks",policy:"Policy",credits:"Credits",about:"About",streak:"day streak"},
@@ -939,6 +988,7 @@
       await syncProgressFromCloud();
       renderLessons();
       loadStreak();
+      renderLeague();
       await startPresence();
     }
 
@@ -954,6 +1004,7 @@
       $("policyScreen").classList.add("hidden");
       $("creditsScreen").classList.add("hidden");
       $("aboutScreen").classList.add("hidden");
+      $("leagueScreen").classList.add("hidden");
       $("studentTab").classList.remove("hidden");
       $("lessonScreen").classList.add("hidden");
       $("onlineCount").textContent = "● Pronto para conectar";
@@ -1065,6 +1116,7 @@
       else await showLoggedOut();
     }
 
+    streakMidnightWatcher();
     initializeApp().catch(error => {
       console.error(error);
       showMessage("Não foi possível iniciar o ReadLanguage. Atualize a página e tente novamente.", true);
