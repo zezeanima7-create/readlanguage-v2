@@ -311,6 +311,29 @@
     .worm-label{font-size:11px;letter-spacing:1.4px;color:#82efa5;font-weight:800}
     @media(max-width:520px){.main-nav{top:66px;justify-content:flex-start}.nav-button{min-width:67px;padding:9px 7px}}
 
+
+    .course-heading{margin:24px 0 12px;font-size:18px}
+    .course-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+    .course-tile{min-height:92px;display:flex;align-items:center;gap:12px;text-align:left;padding:14px;border-radius:19px;background:#172b23;border:1px solid #345744;color:#f2fff6;box-shadow:0 5px 0 #09130e}
+    .course-tile .course-icon{font-size:30px}
+    .course-tile small{display:block;color:#a8c0af;font-size:11px;margin-top:4px}
+    .course-tile.selected{outline:2px solid #ff83d0;background:#38213a}
+    .course-tile:disabled{opacity:.75}
+    .course-note{font-size:12px;color:#a8c0af;margin:10px 0}
+    .streak-card{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;margin:14px 0 20px;border-radius:18px;background:linear-gradient(120deg,#39231c,#241b1b);border:1px solid #88513d}
+    .streak-number{font-size:28px;font-weight:900;color:#ffad69}
+    .streak-fire{font-size:34px}
+    .path-map{position:relative;display:flex;flex-direction:column;align-items:center;gap:24px;padding:24px 8px 34px;overflow:hidden}
+    .path-map:before{content:"";position:absolute;top:48px;bottom:60px;left:50%;width:9px;border-radius:20px;background:repeating-linear-gradient(to bottom,#4fc9ef 0 18px,#263f4a 18px 32px);opacity:.7;transform:translateX(-50%)}
+    .path-node{position:relative;z-index:1;width:94px;height:94px;border-radius:34px;background:linear-gradient(145deg,#ff9cda,#ec59b4);border:5px solid #ffb5e5;box-shadow:0 9px 0 #9d4d85;color:white;font-size:34px;display:grid;place-items:center}
+    .path-node:nth-child(odd){transform:translateX(-72px)}
+    .path-node:nth-child(even){transform:translateX(72px)}
+    .path-node.current{background:linear-gradient(145deg,#8ce5ff,#35b7e9);border-color:#b5f0ff;box-shadow:0 9px 0 #267c9c}
+    .path-node.locked{background:#35444a;border-color:#52646a;box-shadow:0 9px 0 #253239;color:#84979d}
+    .path-caption{position:relative;z-index:1;margin-top:-18px;font-size:12px;color:#d8e9df;background:#102219;padding:5px 10px;border-radius:10px}
+    .locale-select{width:100%;padding:12px;background:#102219;color:#f2fff6;border:1px solid #355541;border-radius:12px;margin:8px 0 16px}
+    @media(max-width:430px){.course-grid{gap:8px}.course-tile{padding:11px;min-height:84px}.path-node{width:82px;height:82px}.path-node:nth-child(odd){transform:translateX(-62px)}.path-node:nth-child(even){transform:translateX(62px)}}
+
   </style>
 </head>
 
@@ -324,6 +347,7 @@
   <div id="drawerBackdrop" class="drawer-backdrop"></div>
   <aside id="sideDrawer" class="drawer" aria-label="Menu lateral" aria-hidden="true">
     <div class="drawer-head"><span>ReadLanguage</span><button id="closeMenu" class="secondary" type="button" aria-label="Fechar menu">✕</button></div>
+    <label for="siteLocale">Idioma do site</label><select id="siteLocale" class="locale-select"><option value="pt">Português</option><option value="en">English</option><option value="es">Español</option><option value="ru">Русский</option></select>
     <nav id="appTabs" class="drawer-nav" aria-label="Navegação principal">
       <button class="nav-button active" data-tab="home" type="button">⌂ <span>Início</span></button>
       <button id="adminTabButton" class="nav-button hidden" data-tab="logs" type="button">▤ <span>Logs</span></button>
@@ -402,6 +426,21 @@
 
     <section id="homeScreen" class="hidden">
       <div id="studentTab"> 
+      <div class="panel" id="coursePicker">
+        <p class="eyebrow">ESCOLHA SUA JORNADA</p>
+        <h2 class="course-heading">📚 Matérias escolares</h2>
+        <div class="course-grid">
+          <button class="course-tile" type="button" data-course="math"><span class="course-icon">➗</span><span><strong>Matemática</strong><small>Em preparação</small></span></button>
+          <button class="course-tile" type="button" data-course="physics"><span class="course-icon">⚛️</span><span><strong>Física</strong><small>Em preparação</small></span></button>
+          <button class="course-tile" type="button" data-course="portuguese"><span class="course-icon">📖</span><span><strong>Português</strong><small>Em preparação</small></span></button>
+        </div>
+        <h2 class="course-heading">🌍 Idiomas</h2>
+        <div class="course-grid" id="languageGrid">
+          <button class="course-tile" type="button" data-language="english" ><span class="course-icon">🇬🇧</span><span><strong>Inglês</strong><small>Disponível</small></span></button><button class="course-tile" type="button" data-language="russian" disabled><span class="course-icon">🇷🇺</span><span><strong>Russo</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="spanish" disabled><span class="course-icon">🇪🇸</span><span><strong>Espanhol</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="french" disabled><span class="course-icon">🇫🇷</span><span><strong>Francês</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="german" disabled><span class="course-icon">🇩🇪</span><span><strong>Alemão</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="italian" disabled><span class="course-icon">🇮🇹</span><span><strong>Italiano</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="japanese" disabled><span class="course-icon">🇯🇵</span><span><strong>Japonês</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="korean" disabled><span class="course-icon">🇰🇷</span><span><strong>Coreano</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="chinese" disabled><span class="course-icon">🇨🇳</span><span><strong>Chinês</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="portuguese" disabled><span class="course-icon">🇵🇹</span><span><strong>Português</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="arabic" disabled><span class="course-icon">🇸🇦</span><span><strong>Árabe</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="dutch" disabled><span class="course-icon">🇳🇱</span><span><strong>Holandês</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="turkish" disabled><span class="course-icon">🇹🇷</span><span><strong>Turco</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="polish" disabled><span class="course-icon">🇵🇱</span><span><strong>Polonês</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="swedish" disabled><span class="course-icon">🇸🇪</span><span><strong>Sueco</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="greek" disabled><span class="course-icon">🇬🇷</span><span><strong>Grego</strong><small>Em preparação</small></span></button><button class="course-tile" type="button" data-language="hindi" disabled><span class="course-icon">🇮🇳</span><span><strong>Hindi</strong><small>Em preparação</small></span></button>
+        </div>
+        <p class="course-note">Os outros cursos já aparecem no catálogo; as aulas serão liberadas conforme forem preparadas. Inglês é o curso jogável nesta versão.</p>
+      </div>
+      <div class="streak-card"><div><div class="eyebrow">SUA OFENSIVA</div><div><span id="streakCount" class="streak-number">0</span> <span id="streakLabel">dias seguidos</span></div><small id="streakMessage">Faça uma atividade hoje para começar!</small></div><div class="streak-fire">🔥</div></div>
       <div class="panel">
         <p class="muted">SEU ESPAÇO DE APRENDIZADO</p>
         <div class="mascot"><div class="mascot-face">🐛</div><div><h1 id="welcomeTitle">Olá!</h1><p class="muted">Vamos estudar um pouco hoje!</p></div></div>
@@ -426,7 +465,7 @@
       <div class="panel">
         <h2>Trilha de inglês</h2>
         <p class="muted">Complete uma aula para liberar seu progresso.</p>
-        <div id="lessonPath"></div>
+        <div id="lessonPath" class="path-map"></div>
       </div>
 
       <div id="lessonScreen" class="panel hidden">
@@ -554,20 +593,43 @@
       const [english, correct, wrongEnglish, wrong] = pair;
       const options = shuffle([{text:correct,ok:true},{text:wrong,ok:false},{text:"Não sei",ok:false},{text:"Nenhuma das opções",ok:false}]);
       return {question:'O que significa "'+english+'"?',options,explanation:'"'+english+'" significa "'+correct+'".'};
-    }    function renderLessons() {
+    }    function streakKey(){return currentUser?"rl_streak_"+currentUser.id:"";}
+    function updateStreak(){
+      if(!currentUser)return;
+      const today=new Date().toLocaleDateString("en-CA");
+      let data={count:0,last:""};
+      try{data=JSON.parse(localStorage.getItem(streakKey())||'{"count":0,"last":""}')}catch{}
+      const yesterday=new Date(Date.now()-86400000).toLocaleDateString("en-CA");
+      if(data.last!==today){data.count=data.last===yesterday?Number(data.count||0)+1:1;data.last=today;localStorage.setItem(streakKey(),JSON.stringify(data))}
+      $("streakCount").textContent=data.count||0;
+      $("streakMessage").textContent="Continue estudando para manter sua sequência!";
+    }
+    function loadStreak(){
+      if(!currentUser)return;
+      let data={count:0,last:""};
+      try{data=JSON.parse(localStorage.getItem(streakKey())||'{"count":0,"last":""}')}catch{}
+      const today=new Date().toLocaleDateString("en-CA");
+      const yesterday=new Date(Date.now()-86400000).toLocaleDateString("en-CA");
+      if(data.last!==today&&data.last!==yesterday)data.count=0;
+      $("streakCount").textContent=data.count||0;
+      $("streakMessage").textContent=data.last===today?"Ofensiva mantida hoje!":"Faça uma atividade hoje para manter sua ofensiva.";
+    }
+    function renderLessons() {
       const progress = getProgress();
       const done = progress.filter(x => x.startsWith("u")).length;
       $("progressText").textContent = done + " de 10 unidades concluídas";
       $("progressBar").style.width = (done / 10 * 100) + "%";
       $("lessonPath").replaceChildren();
       units.forEach((unit,index) => {
-        const completed = progress.includes("u"+index);
-        const unlocked = index===0 || progress.includes("u"+(index-1));
-        const card=document.createElement("div");card.className="unit-card";
-        const h=document.createElement("h3");h.textContent=(completed?"✅ ":unlocked?"📗 ":"🔒 ")+"Unidade "+(index+1)+" — "+unit[0];
-        const p=document.createElement("p");p.className="muted";p.textContent=completed?"Unidade concluída":unlocked?"4 desafios com questões aleatórias":"Conclua a unidade anterior para liberar.";
-        const btn=document.createElement("button");btn.className=unlocked?"primary":"secondary";btn.textContent=completed?"Revisar unidade":unlocked?"Começar unidade":"Bloqueada";btn.disabled=!unlocked;btn.onclick=()=>openLesson(index);
-        card.append(h,p,btn);$("lessonPath").append(card);
+        const completed=progress.includes("u"+index);
+        const unlocked=index===0||progress.includes("u"+(index-1));
+        const btn=document.createElement("button");
+        btn.type="button";btn.className="path-node "+(completed?"":"")+(unlocked&&!completed?" current":"")+(unlocked?"":" locked");
+        btn.textContent=completed?"✓":unlocked?"★":"🔒";
+        btn.title="Unidade "+(index+1)+" — "+unit[0];
+        btn.disabled=!unlocked;btn.addEventListener("click",()=>openLesson(index));
+        const caption=document.createElement("div");caption.className="path-caption";caption.textContent="Unidade "+(index+1)+" · "+unit[0];
+        $("lessonPath").append(btn,caption);
       });
     }
     function openLesson(index) {
@@ -596,6 +658,7 @@
     }
     function checkAnswer(correct) {
       if(correct){
+        updateStreak();
         $("lessonMessage").textContent="Muito bem! "+currentQuestion.explanation;
         currentLesson++;
         const next=document.createElement("button");next.className="primary";next.textContent=currentLesson>=units[currentUnit][1].length?"Concluir unidade":"Próxima questão";next.onclick=nextQuestion;$("lessonAnswers").replaceChildren(next);
@@ -727,7 +790,27 @@
       $("policyScreen").classList.toggle("hidden", tab !== "policy");
       $("creditsScreen").classList.toggle("hidden", tab !== "credits");
       $("aboutScreen").classList.toggle("hidden", tab !== "about");
-      document.querySelectorAll(".nav-button").forEach(button => {
+      const siteTexts={
+      pt:{home:"Início",tasks:"Tarefas",policy:"Política",credits:"Créditos",about:"Sobre",streak:"dias seguidos"},
+      en:{home:"Home",tasks:"Tasks",policy:"Policy",credits:"Credits",about:"About",streak:"day streak"},
+      es:{home:"Inicio",tasks:"Tareas",policy:"Política",credits:"Créditos",about:"Acerca de",streak:"días seguidos"},
+      ru:{home:"Главная",tasks:"Задания",policy:"Правила",credits:"Авторы",about:"О проекте",streak:"дней подряд"}
+    };
+    function applySiteLocale(locale){
+      const t=siteTexts[locale]||siteTexts.pt;
+      document.querySelector('[data-tab="home"] span').textContent=t.home;
+      document.querySelector('[data-tab="tasks"] span').textContent=t.tasks;
+      document.querySelector('[data-tab="policy"] span').textContent=t.policy;
+      document.querySelector('[data-tab="credits"] span').textContent=t.credits;
+      document.querySelector('[data-tab="about"] span').textContent=t.about;
+      $("streakLabel").textContent=t.streak;
+      document.documentElement.lang=({pt:"pt-BR",en:"en",es:"es",ru:"ru"})[locale]||"pt-BR";
+      localStorage.setItem("rl_site_locale",locale);
+    }
+    $("siteLocale").value=localStorage.getItem("rl_site_locale")||"pt";
+    applySiteLocale($("siteLocale").value);
+    $("siteLocale").addEventListener("change",e=>applySiteLocale(e.target.value));
+    document.querySelectorAll(".nav-button").forEach(button => {
         button.classList.toggle("active", button.dataset.tab === tab);
       });
       if (isAdmin) loadAdminLogs();
@@ -855,6 +938,7 @@
 
       await syncProgressFromCloud();
       renderLessons();
+      loadStreak();
       await startPresence();
     }
 
