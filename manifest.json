@@ -1,0 +1,21 @@
+{
+  "id": "/readlanguage-v2/",
+  "name": "ReadLanguage",
+  "short_name": "ReadLanguage",
+  "description": "Aprenda idiomas com o ReadLanguage.",
+  "lang": "pt-BR",
+  "start_url": "/readlanguage-v2/",
+  "scope": "/readlanguage-v2/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#101713",
+  "background_color": "#101713",
+  "icons": [
+    {
+      "src": "/readlanguage-v2/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
