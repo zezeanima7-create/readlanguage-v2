@@ -802,23 +802,50 @@
     }
     function loadStreak(){processStreakMidnight();}
     function streakMidnightWatcher(){processStreakMidnight();setTimeout(streakMidnightWatcher,30000);}
+    const lessonsPerUnit=2;
+    const totalUnits=Math.ceil(units.length/lessonsPerUnit);
+    function unitIsComplete(unitIndex,progress=getProgress()){
+      const first=unitIndex*lessonsPerUnit;
+      return Array.from({length:Math.min(lessonsPerUnit,units.length-first)},(_,n)=>progress.includes("l"+(first+n))).every(Boolean);
+    }
     function renderLessons() {
-      const progress = getProgress();
-      const done = progress.filter(x => x.startsWith("u")).length;
-      $("progressText").textContent = done + " de 10 unidades concluídas";
-      $("progressBar").style.width = (done / 10 * 100) + "%";
+      const progress=getProgress();
+      const done=progress.filter(x=>x.startsWith("l")).length;
+      $("progressText").textContent="Seção 1 · "+done+" de "+units.length+" lições concluídas";
+      $("progressBar").style.width=(done/units.length*100)+"%";
       $("lessonPath").replaceChildren();
-      units.forEach((unit,index) => {
-        const completed=progress.includes("u"+index);
-        const unlocked=index===0||progress.includes("u"+(index-1));
-        const btn=document.createElement("button");
-        btn.type="button";btn.className="path-node "+(completed?"":"")+(unlocked&&!completed?" current":"")+(unlocked?"":" locked");
+      for(let index=0;index<totalUnits;index++){
+        const completed=unitIsComplete(index,progress);
+        const unlocked=index===0||unitIsComplete(index-1,progress);
+        const first=index*lessonsPerUnit;
+        const names=units.slice(first,first+lessonsPerUnit).map(x=>x[0]);
+        const btn=document.createElement("button");btn.type="button";
+        btn.className="path-node "+(completed?"completed":unlocked?"current":"locked");
         btn.textContent=completed?"✓":unlocked?"★":"🔒";
-        btn.title="Unidade "+(index+1)+" — "+unit[0];
-        btn.disabled=!unlocked;btn.addEventListener("click",()=>openLesson(index));
-        const caption=document.createElement("div");caption.className="path-caption";caption.textContent="Unidade "+(index+1)+" · "+unit[0];
+        btn.title="Seção 1 · Unidade "+(index+1);
+        btn.disabled=!unlocked;btn.addEventListener("click",()=>openUnit(index));
+        const caption=document.createElement("div");caption.className="path-caption";
+        caption.textContent="Unidade "+(index+1)+" · "+names.join(" + ");
         $("lessonPath").append(btn,caption);
+      }
+    }
+    function openUnit(unitIndex){
+      const progress=getProgress(),first=unitIndex*lessonsPerUnit;
+      const lessonIndexes=Array.from({length:Math.min(lessonsPerUnit,units.length-first)},(_,n)=>first+n);
+      const next=lessonIndexes.find(i=>!progress.includes("l"+i));
+      if(next===undefined){$("lessonTitle").textContent="Unidade concluída";$("lessonQuestion").textContent="Você concluiu todas as lições desta unidade!";$("lessonAnswers").replaceChildren();$("lessonScreen").classList.remove("hidden");return;}
+      $("lessonScreen").classList.remove("hidden");
+      $("lessonTitle").textContent="SEÇÃO 1 · UNIDADE "+(unitIndex+1);
+      $("lessonQuestion").textContent="Escolha uma lição desta unidade:";
+      $("lessonAnswers").replaceChildren();
+      lessonIndexes.forEach(i=>{
+        const b=document.createElement("button");b.className="secondary answer";
+        b.textContent=(progress.includes("l"+i)?"✓ ":"▶ ")+units[i][0];
+        b.disabled=progress.includes("l"+i);
+        b.onclick=()=>openLesson(i);
+        $("lessonAnswers").append(b);
       });
+      $("lessonScreen").scrollIntoView({behavior:"smooth"});
     }
     function openLesson(index) {
       currentUnit=index;currentLesson=0;currentQuestions=shuffle(units[index][1]);
@@ -829,14 +856,16 @@
     function nextQuestion() {
       const bank=currentQuestions;
       if(currentLesson>=bank.length){
-        const progress=getProgress();if(!progress.includes("u"+currentUnit)){progress.push("u"+currentUnit);saveProgress(progress);}
-        $("lessonTitle").textContent="🎉 Unidade concluída!";
-        $("lessonQuestion").textContent="Você terminou: "+units[currentUnit][0]+". A próxima unidade foi liberada!";
+        const progress=getProgress();if(!progress.includes("l"+currentUnit)){progress.push("l"+currentUnit);saveProgress(progress);}
+        const group=Math.floor(currentUnit/lessonsPerUnit);
+        const unitDone=unitIsComplete(group,progress);
+        $("lessonTitle").textContent=unitDone?"🎉 Unidade concluída!":"🎉 Lição concluída!";
+        $("lessonQuestion").textContent="Você terminou: "+units[currentUnit][0]+(unitDone?". Todas as lições da Unidade "+(group+1)+" foram concluídas!":". Complete a outra lição para avançar de unidade.");
         $("lessonAnswers").replaceChildren();$("lessonMessage").textContent="Muito bem! Continue sua jornada.";
         return;
       }
       currentQuestion=makeQuestion(bank[currentLesson]);
-      $("lessonTitle").textContent="Unidade "+(currentUnit+1)+" · Desafio "+(currentLesson+1)+"/"+bank.length;
+      $("lessonTitle").textContent="Seção 1 · Unidade "+(Math.floor(currentUnit/lessonsPerUnit)+1)+" · Lição "+(currentUnit+1);
       $("lessonQuestion").textContent=currentQuestion.question;
       $("lessonMessage").textContent="";$("lessonAnswers").replaceChildren();
       currentQuestion.options.forEach(option=>{
