@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#101b16">
-  <title>ReadLanguage Plus</title>
+  <title>ReadLanguage</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -279,11 +279,18 @@
     }
 
   
-    .main-nav{display:flex;gap:7px;overflow-x:auto;padding:9px;margin:0 0 18px;background:rgba(14,29,20,.94);border:1px solid #294737;border-radius:18px;position:sticky;top:74px;z-index:8;scrollbar-width:none}
-    .main-nav::-webkit-scrollbar{display:none}
-    .nav-button{flex:1 0 auto;min-width:74px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 9px;background:transparent;color:#a8c0af;border:1px solid transparent;font-size:18px}
-    .nav-button span{font-size:11px;font-weight:650}
+    .menu-toggle{display:none;background:#20382a;color:#effff3;border:1px solid #355541;padding:10px 14px;font-size:22px;line-height:1}
+    .drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+    .drawer{position:fixed;z-index:31;left:0;top:0;bottom:0;width:min(82vw,310px);padding:22px 16px;background:#102219;border-right:1px solid #355541;transform:translateX(-105%);transition:transform .23s ease;box-shadow:18px 0 45px rgba(0,0,0,.35)}
+    .drawer.open{transform:translateX(0)}
+    .drawer-backdrop.open{opacity:1;pointer-events:auto}
+    .drawer-head{display:flex;align-items:center;justify-content:space-between;margin:4px 4px 26px;font-size:19px;font-weight:800}
+    .drawer-nav{display:grid;gap:8px}
+    .nav-button{width:100%;display:flex;align-items:center;gap:14px;text-align:left;padding:14px;background:transparent;color:#b7cdbd;border:1px solid transparent;font-size:16px}
+    .nav-button span{font-size:15px;font-weight:650}
     .nav-button.active{background:#244b34;color:#7df5a7;border-color:#3d7952}
+    body.drawer-open{overflow:hidden}
+    @media(max-width:520px){.menu-toggle{display:block}.topbar{justify-content:flex-start}.brand{flex:1}}
     .eyebrow{font-size:11px;letter-spacing:1.7px;font-weight:800;color:#72e99b}
     .task-item,.credit-item{display:flex;align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid #294737}
     .task-item>span{font-size:24px}.task-item p{margin:4px 0 0}
@@ -298,15 +305,29 @@
 
 <body>
   <header class="topbar">
-    <div class="brand">ReadLanguage <span>Plus</span></div>
+    <button id="menuToggle" class="menu-toggle hidden" type="button" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <div class="brand">ReadLanguage</div>
     <div class="online" id="onlineCount">● Conectando...</div>
   </header>
+
+  <div id="drawerBackdrop" class="drawer-backdrop"></div>
+  <aside id="sideDrawer" class="drawer" aria-label="Menu lateral" aria-hidden="true">
+    <div class="drawer-head"><span>ReadLanguage</span><button id="closeMenu" class="secondary" type="button" aria-label="Fechar menu">✕</button></div>
+    <nav id="appTabs" class="drawer-nav" aria-label="Navegação principal">
+      <button class="nav-button active" data-tab="home" type="button">⌂ <span>Início</span></button>
+      <button id="adminTabButton" class="nav-button hidden" data-tab="logs" type="button">▤ <span>Logs</span></button>
+      <button class="nav-button" data-tab="tasks" type="button">✓ <span>Tarefas</span></button>
+      <button class="nav-button" data-tab="policy" type="button">▣ <span>Política</span></button>
+      <button class="nav-button" data-tab="credits" type="button">✦ <span>Créditos</span></button>
+      <button class="nav-button" data-tab="about" type="button">ⓘ <span>Sobre</span></button>
+    </nav>
+  </aside>
 
   <main>
     <section id="authScreen" class="panel">
       <div class="auth-brandline">
         <div class="auth-logo" aria-hidden="true">📚</div>
-        <div><strong>ReadLanguage Plus</strong><small>Seu próximo idioma começa aqui</small></div>
+        <div><strong>ReadLanguage</strong><small>Seu próximo idioma começa aqui</small></div>
       </div>
       <h1>Aprenda um novo idioma no seu ritmo.</h1>
       <p class="auth-intro">
@@ -369,19 +390,10 @@
     </section>
 
     <section id="homeScreen" class="hidden">
-      <nav id="appTabs" class="main-nav" aria-label="Navegação principal">
-        <button class="nav-button active" data-tab="home" type="button">⌂ <span>Início</span></button>
-        <button id="adminTabButton" class="nav-button hidden" data-tab="logs" type="button">▤ <span>Logs</span></button>
-        <button class="nav-button" data-tab="tasks" type="button">✓ <span>Tarefas</span></button>
-        <button class="nav-button" data-tab="policy" type="button">▣ <span>Política</span></button>
-        <button class="nav-button" data-tab="credits" type="button">✦ <span>Créditos</span></button>
-        <button class="nav-button" data-tab="about" type="button">ⓘ <span>Sobre</span></button>
-      </nav>
-
       <div id="studentTab"> 
       <div class="panel">
         <p class="muted">SEU ESPAÇO DE APRENDIZADO</p>
-        <div class="mascot"><div class="mascot-face">🐛</div><div><h1 id="welcomeTitle">Olá!</h1><p class="muted">O Lingo está pronto para estudar com você!</p></div></div>
+        <div class="mascot"><div class="mascot-face">🐛</div><div><h1 id="welcomeTitle">Olá!</h1><p class="muted">Vamos estudar um pouco hoje!</p></div></div>
         <p class="muted">Continue aprendendo um pouco a cada dia.</p>
 
         <h2>Seu progresso</h2>
@@ -441,7 +453,7 @@
       <section id="creditsScreen" class="info-screen hidden">
         <div class="panel">
           <p class="eyebrow">RECONHECIMENTOS</p><h2>Créditos</h2>
-          <div class="credit-item"><strong>ReadLanguage Plus</strong><span>Projeto e experiência de aprendizagem</span></div>
+          <div class="credit-item"><strong>ReadLanguage</strong><span>Projeto e experiência de aprendizagem</span></div>
           <div class="credit-item"><strong>Supabase</strong><span>Autenticação e serviços de dados</span></div>
           <div class="credit-item"><strong>GitHub Pages</strong><span>Hospedagem do site</span></div>
           <p class="muted">Marcas e serviços citados pertencem aos seus respectivos proprietários.</p>
@@ -451,8 +463,8 @@
         <div class="panel about-panel">
           <div class="about-mascot">🐛</div><p class="eyebrow">OLÁ, SOMOS O READLANGUAGE</p>
           <h2>Aprender pode ser simples.</h2>
-          <p class="muted">O ReadLanguage Plus é um projeto de aprendizado de idiomas com aulas curtas, desafios e progresso por etapas. Nosso objetivo é tornar o estudo mais acessível, leve e divertido.</p>
-          <p class="version">ReadLanguage Plus · Versão 2</p>
+          <p class="muted">O ReadLanguage é um projeto de aprendizado de idiomas com aulas curtas, desafios e progresso por etapas. Nosso objetivo é tornar o estudo mais acessível, leve e divertido.</p>
+          <p class="version">ReadLanguage · Versão 2</p>
           <button class="primary" data-go-home type="button">Começar a aprender</button>
         </div>
       </section>
@@ -471,7 +483,7 @@
     </section>
   </main>
 
-  <footer>ReadLanguage Plus · Aprenda no seu ritmo</footer>
+  <footer>ReadLanguage · Aprenda no seu ritmo</footer>
 
   <script>
     /*
@@ -575,7 +587,7 @@
         currentLesson++;
         const next=document.createElement("button");next.className="primary";next.textContent=currentLesson>=units[currentUnit][1].length?"Concluir unidade":"Próxima questão";next.onclick=nextQuestion;$("lessonAnswers").replaceChildren(next);
       } else {
-        $("lessonMessage").textContent="Quase! Tente outra alternativa. O Lingo acredita em você!";
+        $("lessonMessage").textContent="Quase! Tente outra alternativa. Você consegue! Continue tentando!";
       }
     }
     
@@ -709,8 +721,25 @@
       window.scrollTo({top:0,behavior:"smooth"});
     }
 
+    function closeDrawer() {
+      $("sideDrawer").classList.remove("open");
+      $("drawerBackdrop").classList.remove("open");
+      document.body.classList.remove("drawer-open");
+      $("menuToggle").setAttribute("aria-expanded","false");
+      $("sideDrawer").setAttribute("aria-hidden","true");
+    }
+    function openDrawer() {
+      $("sideDrawer").classList.add("open");
+      $("drawerBackdrop").classList.add("open");
+      document.body.classList.add("drawer-open");
+      $("menuToggle").setAttribute("aria-expanded","true");
+      $("sideDrawer").setAttribute("aria-hidden","false");
+    }
+    $("menuToggle").addEventListener("click",openDrawer);
+    $("closeMenu").addEventListener("click",closeDrawer);
+    $("drawerBackdrop").addEventListener("click",closeDrawer);
     document.querySelectorAll(".nav-button").forEach(button => {
-      button.addEventListener("click", () => switchMainTab(button.dataset.tab));
+      button.addEventListener("click", () => { switchMainTab(button.dataset.tab); closeDrawer(); });
     });
     document.querySelectorAll("[data-go-home]").forEach(button => {
       button.addEventListener("click", () => switchMainTab("home"));
@@ -807,7 +836,7 @@
         "Olá, " + (user.user_metadata?.display_name || user.email || "estudante") + "!";
 
       const isAdmin = user.app_metadata?.role === "admin";
-      $("appTabs").classList.remove("hidden");
+      $("menuToggle").classList.remove("hidden");
       $("adminTabButton").classList.toggle("hidden", !isAdmin);
       switchMainTab("home");
 
@@ -821,7 +850,8 @@
       await stopPresence();
       $("authScreen").classList.remove("hidden");
       $("homeScreen").classList.add("hidden");
-      $("appTabs").classList.add("hidden");
+      $("menuToggle").classList.add("hidden");
+      closeDrawer();
       $("adminScreen").classList.add("hidden");
       $("tasksScreen").classList.add("hidden");
       $("policyScreen").classList.add("hidden");
