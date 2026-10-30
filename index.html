@@ -122,6 +122,17 @@
 
     .tabs button { flex: 1; }
 
+    .app-tabs {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      padding: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+
     .message {
       min-height: 22px;
       color: var(--green);
@@ -260,6 +271,12 @@
     </section>
 
     <section id="homeScreen" class="hidden">
+      <nav id="appTabs" class="tabs hidden" aria-label="Navegação principal">
+        <button id="homeTabButton" class="primary" type="button">Início</button>
+        <button id="adminTabButton" class="secondary" type="button">🔒 Logs</button>
+      </nav>
+
+      <div id="studentTab"> 
       <div class="panel">
         <p class="muted">SEU ESPAÇO DE APRENDIZADO</p>
         <h1 id="welcomeTitle">Olá!</h1>
@@ -281,16 +298,6 @@
         </div>
       </div>
 
-      <section id="adminPanel" class="panel hidden" aria-labelledby="adminTitle">
-        <div class="row" style="align-items:center;justify-content:space-between">
-          <h2 id="adminTitle">Painel privado — Logs</h2>
-          <button id="refreshLogs" class="secondary" type="button">Atualizar</button>
-        </div>
-        <p class="muted">Visível somente para contas com função admin autorizada no Supabase.</p>
-        <p id="adminMessage" class="message" role="status"></p>
-        <div id="adminLogs"></div>
-      </section>
-
       <div class="panel">
         <h2>Trilha de inglês</h2>
         <p class="muted">Complete uma aula para liberar seu progresso.</p>
@@ -306,6 +313,19 @@
           Voltar às aulas
         </button>
       </div>
+      </div>
+
+      <section id="adminScreen" class="hidden" aria-labelledby="adminTitle">
+        <div class="panel">
+          <div class="row" style="align-items:center;justify-content:space-between">
+            <h2 id="adminTitle">🔒 Central de Logs</h2>
+            <button id="refreshLogs" class="secondary" type="button">Atualizar</button>
+          </div>
+          <p class="muted">Área administrativa privada. Registros recentes de atividade das contas.</p>
+          <p id="adminMessage" class="message" role="status"></p>
+          <div id="adminLogs"></div>
+        </div>
+      </section>
     </section>
   </main>
 
@@ -500,6 +520,18 @@
       }
     });
 
+    function switchMainTab(tab) {
+      const isAdminTab = tab === "admin";
+      $("studentTab").classList.toggle("hidden", isAdminTab);
+      $("adminScreen").classList.toggle("hidden", !isAdminTab);
+      $("homeTabButton").className = isAdminTab ? "secondary" : "primary";
+      $("adminTabButton").className = isAdminTab ? "primary" : "secondary";
+      if (isAdminTab) loadAdminLogs();
+    }
+
+    $("homeTabButton").addEventListener("click", () => switchMainTab("home"));
+    $("adminTabButton").addEventListener("click", () => switchMainTab("admin"));
+
     // Logs básicos de eventos do aplicativo. A leitura é protegida por RLS no Supabase.
     async function logEvent(eventType, details = "") {
       if (!currentUser) return;
@@ -564,8 +596,12 @@
         "Olá, " + (user.user_metadata?.display_name || user.email || "estudante") + "!";
 
       const isAdmin = user.app_metadata?.role === "admin";
-      $("adminPanel").classList.toggle("hidden", !isAdmin);
-      if (isAdmin) await loadAdminLogs();
+      $("appTabs").classList.toggle("hidden", !isAdmin);
+      $("adminTabButton").classList.toggle("hidden", !isAdmin);
+      $("adminScreen").classList.add("hidden");
+      $("studentTab").classList.remove("hidden");
+      $("homeTabButton").className = "primary";
+      $("adminTabButton").className = "secondary";
 
       renderLessons();
       startPresence();
@@ -577,6 +613,9 @@
 
       $("authScreen").classList.remove("hidden");
       $("homeScreen").classList.add("hidden");
+      $("appTabs").classList.add("hidden");
+      $("adminScreen").classList.add("hidden");
+      $("studentTab").classList.remove("hidden");
       $("lessonScreen").classList.add("hidden");
       $("onlineCount").textContent = "● Conectando...";
     }
