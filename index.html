@@ -298,6 +298,17 @@
     .info-screen .panel h3{margin-top:24px}
     .credit-item{flex-direction:column;gap:4px}.credit-item span{font-size:13px;color:var(--muted)}
     .about-panel{text-align:center}.about-mascot{font-size:64px;margin:10px}.version{font-size:12px;color:#79a88a;margin:25px 0}
+    .creator-credit{margin:18px auto 0;padding:15px 18px;max-width:360px;border:1px solid #3c7650;border-radius:18px;background:linear-gradient(135deg,#1b3b29,#13271c)}
+    .creator-credit strong{display:block;color:#7df5a7;font-size:18px;margin-top:5px}
+    .task-intro{display:flex;align-items:center;gap:14px;margin:8px 0 22px}
+    .worm-face{font-size:44px;filter:drop-shadow(0 5px 8px #07110a)}
+    .worm-path{position:relative;display:grid;gap:14px;margin:22px 0}
+    .worm-task{position:relative;display:flex;align-items:center;gap:14px;padding:16px;border-radius:20px;background:linear-gradient(135deg,#1a3827,#13271c);border:1px solid #345b40;box-shadow:0 7px 0 #0b1710}
+    .worm-task:nth-child(even){margin-left:22px}
+    .worm-segment{width:48px;height:48px;flex:none;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#8af5aa,#38bd70);color:#092015;font-size:23px;border:3px solid #b4ffc9;box-shadow:0 3px 0 #176239}
+    .worm-task strong{display:block;font-size:15px}
+    .worm-task p{margin:4px 0 0;font-size:13px;color:var(--muted)}
+    .worm-label{font-size:11px;letter-spacing:1.4px;color:#82efa5;font-weight:800}
     @media(max-width:520px){.main-nav{top:66px;justify-content:flex-start}.nav-button{min-width:67px;padding:9px 7px}}
 
   </style>
@@ -432,12 +443,13 @@
 
       <section id="tasksScreen" class="info-screen hidden">
         <div class="panel">
-          <p class="eyebrow">SUA ROTINA DE ESTUDOS</p>
-          <h2>Minhas tarefas</h2>
-          <p class="muted">Pequenos passos para manter seu aprendizado em movimento.</p>
-          <div class="task-item"><span>📘</span><div><strong>Concluir uma aula</strong><p class="muted">Avance na trilha de inglês.</p></div></div>
-          <div class="task-item"><span>🔁</span><div><strong>Revisar palavras</strong><p class="muted">Volte a uma unidade já concluída.</p></div></div>
-          <div class="task-item"><span>🌱</span><div><strong>Estudar um pouco hoje</strong><p class="muted">A consistência vale mais que a pressa.</p></div></div>
+          <p class="eyebrow">ÁREA DE TAREFAS · READLANGUAGE</p>
+          <div class="task-intro"><div class="worm-face">🐛</div><div><h2>Missões da minhoca</h2><p class="muted">Sua jornada de aprendizagem em etapas.</p></div></div>
+          <div class="worm-path">
+            <article class="worm-task"><div class="worm-segment">📘</div><div><strong>Missão 1 — Aprender</strong><p>Conclua uma unidade na trilha de inglês.</p></div></article>
+            <article class="worm-task"><div class="worm-segment">🔁</div><div><strong>Missão 2 — Revisar</strong><p>Volte a uma unidade concluída e relembre as palavras.</p></div></article>
+            <article class="worm-task"><div class="worm-segment">🌱</div><div><strong>Missão 3 — Criar hábito</strong><p>Reserve alguns minutos para estudar hoje.</p></div></article>
+          </div>
           <button class="primary" data-go-home type="button">Ir para minhas aulas</button>
         </div>
       </section>
@@ -464,6 +476,7 @@
           <div class="about-mascot">🐛</div><p class="eyebrow">OLÁ, SOMOS O READLANGUAGE</p>
           <h2>Aprender pode ser simples.</h2>
           <p class="muted">O ReadLanguage é um projeto de aprendizado de idiomas com aulas curtas, desafios e progresso por etapas. Nosso objetivo é tornar o estudo mais acessível, leve e divertido.</p>
+          <div class="creator-credit"><span class="worm-label">CRIADO POR</span><strong>Zeze Anima</strong></div>
           <p class="version">ReadLanguage · Versão 2</p>
           <button class="primary" data-go-home type="button">Começar a aprender</button>
         </div>
