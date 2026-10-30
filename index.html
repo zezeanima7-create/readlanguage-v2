@@ -530,7 +530,7 @@
     }
 
     $("homeTabButton").addEventListener("click", () => switchMainTab("home"));
-    $("adminTabButton").addEventListener("click", () => switchMainTab("admin"));
+    $("adminTabButton").addEventListener("click", () => { window.location.href = "./admin.html"; });
 
     // Logs básicos de eventos do aplicativo. A leitura é protegida por RLS no Supabase.
     async function logEvent(eventType, details = "") {
