@@ -482,7 +482,7 @@
       .path-node:nth-of-type(even){transform:translateX(70px)}
     }
 
-  </style>
+  .topbar{height:78px!important;min-height:78px!important;padding:8px 16px!important;grid-template-columns:52px 42px minmax(70px,1fr) 0!important;gap:12px!important}.header-avatar{width:48px!important;height:48px!important;font-size:27px!important}.header-subject{width:40px!important;height:38px!important;font-size:20px!important}.header-stat{font-size:18px!important;gap:4px!important}.header-stat strong{font-size:17px!important}.life-symbol{font-size:20px!important}.subject-picker{padding:5px 10px 3px!important}.subject-strip{gap:14px!important;padding:6px 7px 10px!important}.subject-tile{flex-basis:100px!important;gap:7px!important}.subject-icon{width:100px!important;height:88px!important;border-radius:17px!important;font-size:39px!important}.subject-tile strong{font-size:14px!important}.unit-hero{height:82px!important;min-height:82px!important;margin:10px 14px 6px!important;padding:8px 12px!important;gap:12px!important;border-radius:17px!important;border-bottom-width:5px!important}.hero-back{width:42px!important;min-width:42px!important;height:54px!important;font-size:34px!important;border-right-width:2px!important}.hero-copy{gap:4px!important}.hero-copy span{font-size:12px!important}.hero-copy strong{font-size:19px!important}#studentTab{padding:0 10px!important}#learningPathPanel{padding:0 0 18px!important}.path-map{gap:12px!important;padding:4px 0 20px!important}.path-node{width:68px!important;height:68px!important;font-size:25px!important;border-width:4px!important;box-shadow:0 5px 0 #b44f91!important}.path-node.current{box-shadow:0 0 0 6px #a95c91,0 5px 0 #a95c91!important}.path-node:nth-of-type(odd){transform:translateX(-48px)!important}.path-node:nth-of-type(even){transform:translateX(48px)!important}.path-caption{display:block!important;font-size:10px!important;margin-top:-9px!important;padding:3px 7px!important}@media(max-width:520px){.topbar{height:72px!important;min-height:72px!important;grid-template-columns:46px 38px minmax(64px,1fr) 0!important;padding:7px 12px!important;gap:9px!important}.header-avatar{width:43px!important;height:43px!important}.header-subject{width:36px!important;height:35px!important;font-size:18px!important}.header-stat{font-size:16px!important}.header-stat strong{font-size:15px!important}.subject-tile{flex-basis:92px!important}.subject-icon{width:92px!important;height:80px!important}.subject-tile strong{font-size:13px!important}.unit-hero{height:76px!important;min-height:76px!important;margin:8px 10px 4px!important}.hero-back{width:36px!important;min-width:36px!important;font-size:30px!important}.hero-copy strong{font-size:17px!important}.path-node{width:62px!important;height:62px!important}.path-node:nth-of-type(odd){transform:translateX(-42px)!important}.path-node:nth-of-type(even){transform:translateX(42px)!important}}</style>
 </head>
 
 <body>
@@ -1017,7 +1017,8 @@
     $("profileStyle").addEventListener("change",updateAvatar);
     $("saveProfile").addEventListener("click",()=>{localStorage.setItem(profileKey(),$("profileStyle").value);updateAvatar();$("profilePanel").classList.add("hidden");});
     const subjectMeta={math:["➗","Matemática","ARITMÉTICA 1","Divida"],chess:["♟","Xadrez","XADREZ 1","Movimentos básicos"],english:["🇺🇸","Inglês","INGLÊS 1","Cumprimente"],spanish:["🇪🇸","Espanhol","ESPANHOL 1","Saludos"],physics:["⚛️","Física","FÍSICA 1","Movimento"],portuguese:["🇧🇷","Português","PORTUGUÊS 1","Leitura"]};
-    const subjectTopics={math:["Adição","Subtração","Multiplicação","Divisão","Frações","Porcentagem","Equações"],chess:["Peças","Movimentos","Xeque","Defesa","Estratégia"],english:units.map(x=>x[0]),spanish:["Saludos","Números","Verbos","Frases"],physics:["Movimento","Força","Energia","Matéria"],portuguese:["Leitura","Gramática","Ortografia","Interpretação"]};
+    const mathUnits=["Números e contagem","Adição básica","Subtração básica","Multiplicação","Divisão","Tabuada e operações","Frações","Números decimais","Porcentagem","Potenciação e raízes","Expressões numéricas","Equações do 1º grau","Razão e proporção","Geometria básica","Áreas e perímetros","Equações do 2º grau","Funções e gráficos","Trigonometria","Logaritmos","Progressões","Geometria analítica","Pré-cálculo","Limites","Derivadas","Integrais","Álgebra linear","Probabilidade avançada","Cálculo universitário"];
+    const subjectTopics={math:mathUnits,chess:["Peças","Movimentos","Xeque","Defesa","Estratégia"],english:units.map(x=>x[0]),spanish:["Saludos","Números","Verbos","Frases"],physics:["Movimento","Força","Energia","Matéria"],portuguese:["Leitura","Gramática","Ortografia","Interpretação"]};
     let selectedSubject="math";
     function renderSubjectPath(){
       const meta=subjectMeta[selectedSubject]||subjectMeta.math;
@@ -1027,12 +1028,27 @@
       if(isEnglish){renderLessons();return;}
       $("lessonPath").replaceChildren();
       const topics=subjectTopics[selectedSubject]||subjectTopics.math;
+      const mathProgress=selectedSubject==="math"?getMathProgress():[];
       topics.forEach((topic,index)=>{
-        const btn=document.createElement("button");btn.type="button";btn.className="path-node "+(index===0?"current":"locked");
-        btn.textContent=index===0?"★":"🔒";btn.disabled=true;btn.title=topic;
-        const caption=document.createElement("div");caption.className="path-caption";caption.textContent=topic;
+        const done=selectedSubject==="math"&&mathProgress.includes(index);
+        const unlocked=index===0||(selectedSubject==="math"&&mathProgress.includes(index-1));
+        const btn=document.createElement("button");btn.type="button";btn.className="path-node "+(done?"completed":unlocked?"current":"locked");
+        btn.textContent=done?"✓":unlocked?"★":"🔒";btn.disabled=!unlocked;btn.title="Unidade "+(index+1)+" — "+topic;
+        if(selectedSubject==="math")btn.addEventListener("click",()=>openMathUnit(index));
+        const caption=document.createElement("div");caption.className="path-caption";caption.textContent="Unidade "+(index+1)+" · "+topic;
         $("lessonPath").append(btn,caption);
       });
+    }
+    function mathProgressKey(){return "rl_math_progress_"+(currentUser?.id||"guest");}
+    function getMathProgress(){try{return JSON.parse(localStorage.getItem(mathProgressKey())||"[]");}catch{return [];}}
+    function openMathUnit(index){
+      $("lessonScreen").classList.remove("hidden");
+      $("lessonTitle").textContent="Matemática · Unidade "+(index+1);
+      $("lessonQuestion").textContent=mathUnits[index]+" — conteúdo desta unidade será desenvolvido nesta sequência progressiva.";
+      $("lessonAnswers").replaceChildren();
+      const back=document.createElement("button");back.className="primary";back.textContent="Voltar à trilha";back.onclick=()=>$("lessonScreen").classList.add("hidden");
+      $("lessonAnswers").append(back);$("lessonMessage").textContent="Do básico até conteúdos de nível universitário.";
+      $("lessonScreen").scrollIntoView({behavior:"smooth"});
     }
     function selectSubject(id){
       selectedSubject=subjectMeta[id]?id:"math";
