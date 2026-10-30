@@ -410,7 +410,7 @@
       $("lessonScreen").scrollIntoView({behavior:"smooth"});
     }
     function nextQuestion() {
-      const bank=units[currentUnit][1];
+      const bank=currentQuestions;
       if(currentLesson>=bank.length){
         const progress=getProgress();if(!progress.includes("u"+currentUnit)){progress.push("u"+currentUnit);saveProgress(progress);}
         $("lessonTitle").textContent="🎉 Unidade concluída!";
