@@ -242,6 +242,11 @@
             Esqueci minha senha
           </button>
         </p>
+
+        <div class="muted" style="text-align:center;margin:18px 0 10px">ou</div>
+        <button id="googleLoginButton" class="secondary" type="button" style="width:100%">
+          Continuar com Google
+        </button>
       </form>
 
       <form id="registerForm" class="hidden">
@@ -404,7 +409,7 @@
       });
     }
     function openLesson(index) {
-      currentUnit=index;currentLesson=0;
+      currentUnit=index;currentLesson=0;currentQuestions=shuffle(units[index][1]);
       $("lessonScreen").classList.remove("hidden");
       nextQuestion();
       $("lessonScreen").scrollIntoView({behavior:"smooth"});
@@ -436,3 +441,358 @@
         $("lessonMessage").textContent="Quase! Tente outra alternativa. O Lingo acredita em você!";
       }
     }
+    
+    // Estado da sessão e da unidade atual.
+    let currentUser = null;
+    let currentUnit = 0;
+    let currentLesson = 0;
+    let currentQuestion = null;
+    let currentQuestions = [];
+    let presenceChannel = null;
+
+    function showMessage(message, isError = false) {
+      const target = $("authMessage");
+      target.textContent = message || "";
+      target.classList.toggle("error", Boolean(isError));
+    }
+
+    function showAuthTab(tab) {
+      const registering = tab === "register";
+      $("loginForm").classList.toggle("hidden", registering);
+      $("registerForm").classList.toggle("hidden", !registering);
+      $("loginTab").className = registering ? "secondary" : "primary";
+      $("registerTab").className = registering ? "primary" : "secondary";
+      showMessage("");
+    }
+
+    $("loginTab").addEventListener("click", () => showAuthTab("login"));
+    $("registerTab").addEventListener("click", () => showAuthTab("register"));
+
+    function progressKey() {
+      return currentUser ? "rlplus_progress_" + currentUser.id : "";
+    }
+
+    function getProgress() {
+      if (!currentUser) return [];
+      try {
+        const value = JSON.parse(localStorage.getItem(progressKey()) || "[]");
+        return Array.isArray(value) ? value.filter(x => typeof x === "string") : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveProgress(progress) {
+      if (!currentUser) return;
+      const unique = [...new Set(progress)];
+      localStorage.setItem(progressKey(), JSON.stringify(unique));
+      renderLessons();
+
+      const rows = unique
+        .filter(value => /^u[0-9]$/.test(value))
+        .map(value => ({
+          user_id: currentUser.id,
+          unit_number: Number(value.slice(1)) + 1
+        }));
+
+      if (rows.length) {
+        supabaseClient.from("user_unit_progress")
+          .upsert(rows, { onConflict: "user_id,unit_number" })
+          .then(({ error }) => {
+            if (error) console.warn("Progresso salvo neste aparelho; sincronização indisponível:", error.message);
+          });
+      }
+    }
+
+    async function syncProgressFromCloud() {
+      if (!currentUser) return;
+      const { data, error } = await supabaseClient
+        .from("user_unit_progress")
+        .select("unit_number")
+        .eq("user_id", currentUser.id);
+
+      if (error) {
+        console.warn("Não foi possível carregar o progresso da nuvem:", error.message);
+        return;
+      }
+
+      const merged = new Set(getProgress());
+      (data || []).forEach(row => {
+        const index = Number(row.unit_number) - 1;
+        if (index >= 0 && index < 10) merged.add("u" + index);
+      });
+
+      const result = [...merged];
+      localStorage.setItem(progressKey(), JSON.stringify(result));
+
+      const rows = result
+        .filter(value => /^u[0-9]$/.test(value))
+        .map(value => ({
+          user_id: currentUser.id,
+          unit_number: Number(value.slice(1)) + 1
+        }));
+
+      if (rows.length) {
+        const saved = await supabaseClient.from("user_unit_progress")
+          .upsert(rows, { onConflict: "user_id,unit_number" });
+        if (saved.error) console.warn("Não foi possível sincronizar o progresso:", saved.error.message);
+      }
+      renderLessons();
+    }
+
+    $("backButton").addEventListener("click", () => {
+      $("lessonScreen").classList.add("hidden");
+      $("lessonPath").scrollIntoView({ behavior: "smooth" });
+    });
+
+    $("resetProgress").addEventListener("click", async () => {
+      if (!currentUser) return;
+      if (!confirm("Quer realmente reiniciar o progresso das unidades?")) return;
+
+      localStorage.removeItem(progressKey());
+      const { error } = await supabaseClient.from("user_unit_progress")
+        .delete().eq("user_id", currentUser.id);
+      if (error) console.warn("O progresso local foi reiniciado, mas a nuvem retornou:", error.message);
+      $("lessonScreen").classList.add("hidden");
+      renderLessons();
+    });
+
+    function switchMainTab(tab) {
+      const isAdmin = tab === "admin";
+      $("studentTab").classList.toggle("hidden", isAdmin);
+      $("adminScreen").classList.toggle("hidden", !isAdmin);
+      $("homeTabButton").className = isAdmin ? "secondary" : "primary";
+      $("adminTabButton").className = isAdmin ? "primary" : "secondary";
+      if (isAdmin) loadAdminLogs();
+    }
+
+    $("homeTabButton").addEventListener("click", () => switchMainTab("home"));
+    $("adminTabButton").addEventListener("click", () => switchMainTab("admin"));
+    $("refreshLogs").addEventListener("click", loadAdminLogs);
+
+    async function logEvent(eventType, details = "") {
+      if (!currentUser) return;
+      const allowed = ["login_success", "logout", "profile_error"];
+      if (!allowed.includes(eventType)) return;
+
+      const { error } = await supabaseClient.from("admin_audit_logs").insert({
+        user_id: currentUser.id,
+        account_email: currentUser.email || null,
+        event_type: eventType,
+        details: String(details).slice(0, 300)
+      });
+      if (error) console.warn("Não foi possível registrar o evento:", error.message);
+    }
+
+    async function loadAdminLogs() {
+      $("adminMessage").textContent = "Carregando registros...";
+      $("adminMessage").classList.remove("error");
+      $("adminLogs").replaceChildren();
+
+      const { data, error } = await supabaseClient
+        .from("admin_audit_logs")
+        .select("id,event_type,account_email,details,created_at")
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (error) {
+        $("adminMessage").textContent = "Não foi possível carregar os logs. Verifique a função admin e as políticas RLS.";
+        $("adminMessage").classList.add("error");
+        return;
+      }
+
+      $("adminMessage").textContent = data.length
+        ? data.length + " registro(s) recentes."
+        : "Nenhum registro encontrado.";
+
+      data.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "unit-card";
+        const title = document.createElement("strong");
+        title.textContent = item.event_type;
+        const meta = document.createElement("p");
+        meta.className = "muted";
+        meta.textContent = (item.account_email || "Conta não identificada") +
+          " · " + new Date(item.created_at).toLocaleString("pt-BR");
+        const details = document.createElement("p");
+        details.textContent = item.details || "Sem detalhes adicionais.";
+        card.append(title, meta, details);
+        $("adminLogs").append(card);
+      });
+    }
+
+    async function startPresence() {
+      if (!currentUser) return;
+      if (presenceChannel) {
+        await supabaseClient.removeChannel(presenceChannel);
+        presenceChannel = null;
+      }
+
+      $("onlineCount").textContent = "● Conectado";
+      presenceChannel = supabaseClient.channel("readlanguage-plus-online", {
+        config: { presence: { key: currentUser.id } }
+      });
+
+      presenceChannel
+        .on("presence", { event: "sync" }, () => {
+          const count = Object.keys(presenceChannel.presenceState()).length;
+          $("onlineCount").textContent = "● " + count + " online";
+        })
+        .subscribe(async status => {
+          if (status === "SUBSCRIBED" && currentUser) {
+            await presenceChannel.track({ online_at: new Date().toISOString() });
+          }
+        });
+    }
+
+    async function stopPresence() {
+      if (!presenceChannel) return;
+      await supabaseClient.removeChannel(presenceChannel);
+      presenceChannel = null;
+    }
+
+    async function showLoggedIn(user) {
+      if (!user) return;
+      currentUser = user;
+      $("authScreen").classList.add("hidden");
+      $("homeScreen").classList.remove("hidden");
+      $("welcomeTitle").textContent =
+        "Olá, " + (user.user_metadata?.display_name || user.email || "estudante") + "!";
+
+      const isAdmin = user.app_metadata?.role === "admin";
+      $("appTabs").classList.toggle("hidden", !isAdmin);
+      $("adminTabButton").classList.toggle("hidden", !isAdmin);
+      $("adminScreen").classList.add("hidden");
+      $("studentTab").classList.remove("hidden");
+
+      await syncProgressFromCloud();
+      renderLessons();
+      await startPresence();
+    }
+
+    async function showLoggedOut() {
+      currentUser = null;
+      await stopPresence();
+      $("authScreen").classList.remove("hidden");
+      $("homeScreen").classList.add("hidden");
+      $("appTabs").classList.add("hidden");
+      $("adminScreen").classList.add("hidden");
+      $("studentTab").classList.remove("hidden");
+      $("lessonScreen").classList.add("hidden");
+      $("onlineCount").textContent = "● Pronto para conectar";
+    }
+
+    $("registerForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      showMessage("Criando sua conta...");
+
+      const name = $("registerName").value.trim();
+      const email = $("registerEmail").value.trim();
+      const password = $("registerPassword").value;
+
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: { data: { display_name: name } }
+      });
+
+      if (error) {
+        showMessage("Não foi possível criar a conta: " + error.message, true);
+        return;
+      }
+
+      if (data.session && data.user) {
+        await showLoggedIn(data.user);
+        showMessage("");
+      } else {
+        showMessage("Conta criada! Confira seu e-mail para confirmar o cadastro e depois entre.");
+        showAuthTab("login");
+        $("loginEmail").value = email;
+      }
+    });
+
+    $("loginForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      showMessage("Entrando...");
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: $("loginEmail").value.trim(),
+        password: $("loginPassword").value
+      });
+
+      if (error) {
+        showMessage("Não foi possível entrar: " + error.message, true);
+        return;
+      }
+
+      await showLoggedIn(data.user);
+      await logEvent("login_success", "Login concluído no aplicativo.");
+      showMessage("");
+    });
+
+    $("googleLoginButton").addEventListener("click", async () => {
+      showMessage("Conectando ao Google...");
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: window.location.origin + window.location.pathname
+        }
+      });
+
+      if (error) {
+        showMessage("Não foi possível iniciar o Google Login: " + error.message, true);
+      }
+    });
+
+    $("forgotButton").addEventListener("click", async () => {
+      const email = $("loginEmail").value.trim();
+      if (!email) {
+        showMessage("Digite seu e-mail no campo acima.", true);
+        return;
+      }
+
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + window.location.pathname
+      });
+
+      if (error) showMessage(error.message, true);
+      else showMessage("Se a recuperação estiver habilitada, você receberá um e-mail.");
+    });
+
+    $("logoutButton").addEventListener("click", async () => {
+      await logEvent("logout", "Sessão encerrada pelo usuário.");
+      const { error } = await supabaseClient.auth.signOut();
+      if (error) {
+        alert("Erro ao sair: " + error.message);
+        return;
+      }
+      await showLoggedOut();
+      showMessage("Você saiu da conta.");
+    });
+
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session?.user) {
+        Promise.resolve().then(() => showLoggedIn(session.user));
+      } else if (event === "SIGNED_OUT") {
+        Promise.resolve().then(() => showLoggedOut());
+      }
+    });
+
+    async function initializeApp() {
+      const { data, error } = await supabaseClient.auth.getSession();
+      if (error) {
+        showMessage("Erro ao verificar a sessão: " + error.message, true);
+        return;
+      }
+      if (data.session?.user) await showLoggedIn(data.session.user);
+      else await showLoggedOut();
+    }
+
+    initializeApp().catch(error => {
+      console.error(error);
+      showMessage("Não foi possível iniciar o ReadLanguage. Atualize a página e tente novamente.", true);
+      $("onlineCount").textContent = "● Erro de conexão";
+    });
+  </script>
+</body>
+</html>
