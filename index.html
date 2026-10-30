@@ -172,7 +172,7 @@
       transition: width .2s;
     }
 
-    .hidden { display: none !important; }
+    .hidden { display: none !important; }\n    .mascot{display:flex;align-items:center;gap:15px;margin:12px 0 22px}.mascot-face{width:76px;height:76px;flex:none;border-radius:24px;background:#263c2d;display:grid;place-items:center;font-size:43px;border:2px solid var(--green);box-shadow:0 5px 0 #0b100d}.mascot h1{margin:0}.unit-card{border:1px solid var(--border);border-radius:14px;padding:15px;margin:12px 0;background:#141e17}.unit-card h3{margin:0 0 6px}.pill{font-size:12px;color:var(--green)}
 
     .row {
       display: flex;
@@ -279,11 +279,11 @@
       <div id="studentTab"> 
       <div class="panel">
         <p class="muted">SEU ESPAÇO DE APRENDIZADO</p>
-        <h1 id="welcomeTitle">Olá!</h1>
+        <div class="mascot"><div class="mascot-face">🐛</div><div><h1 id="welcomeTitle">Olá!</h1><p class="muted">O Lingo está pronto para estudar com você!</p></div></div>
         <p class="muted">Continue aprendendo um pouco a cada dia.</p>
 
         <h2>Seu progresso</h2>
-        <div id="progressText">0 de 4 aulas concluídas</div>
+        <div id="progressText">0 de 10 unidades concluídas</div>
         <div class="progress-bg">
           <div id="progressBar" class="progress-bar"></div>
         </div>
@@ -350,428 +350,89 @@
 
     const $ = id => document.getElementById(id);
 
-    const lessons = [
-      {
-        title: "Aula 1 — Cumprimentos",
-        question: 'O que significa "Hello"?',
-        answers: ["Adeus", "Olá", "Obrigado", "Por favor"],
-        correct: 1,
-        explanation: '"Hello" significa "Olá".'
-      },
-      {
-        title: "Aula 2 — Apresentações",
-        question: 'O que significa "My name is Ana"?',
-        answers: [
-          "Onde está Ana?",
-          "Ana é minha amiga",
-          "Meu nome é Ana",
-          "Eu vi Ana"
-        ],
-        correct: 2,
-        explanation: '"My name is Ana" significa "Meu nome é Ana".'
-      },
-      {
-        title: "Aula 3 — Frases comuns",
-        question: 'O que significa "Thank you"?',
-        answers: ["Obrigado(a)", "Desculpe", "Bom dia", "Até logo"],
-        correct: 0,
-        explanation: '"Thank you" é uma forma de agradecer.'
-      },
-      {
-        title: "Aula 4 — Perguntas",
-        question: 'O que significa "How are you?"?',
-        answers: [
-          "Qual é seu nome?",
-          "Quantos anos você tem?",
-          "Onde você mora?",
-          "Como você está?"
-        ],
-        correct: 3,
-        explanation: '"How are you?" pergunta como alguém está.'
-      }
+    const units = [
+      ["Cumprimente as pessoas",[
+        ["Hello","Olá","Goodbye","Adeus"],["Good morning","Bom dia","Good night","Boa noite"],["Thank you","Obrigado(a)","Please","Por favor"],["How are you?","Como você está?","What is your name?","Qual é seu nome?"]
+      ]],
+      ["Aprenda verbos",[
+        ["Run","Correr","Eat","Comer"],["Read","Ler","Write","Escrever"],["Sleep","Dormir","Speak","Falar"],["I study English","Eu estudo inglês","I play soccer","Eu jogo futebol"]
+      ]],
+      ["Fale sobre sua rotina",[
+        ["I wake up","Eu acordo","I go to bed","Eu vou dormir"],["Every day","Todos os dias","Sometimes","Às vezes"],["I have breakfast","Eu tomo café da manhã","I have lunch","Eu almoço"],["At night","À noite","In the morning","De manhã"]
+      ]],
+      ["Números e horários",[
+        ["One","Um","Two","Dois"],["Ten","Dez","Twenty","Vinte"],["What time is it?","Que horas são?","Where is it?","Onde fica?"],["Half past three","Três e meia","Quarter past four","Quatro e quinze"]
+      ]],
+      ["Descreva pessoas e lugares",[
+        ["Big","Grande","Small","Pequeno"],["Beautiful","Bonito(a)","Old","Velho(a)"],["The house is blue","A casa é azul","The car is fast","O carro é rápido"],["Friendly","Amigável","Quiet","Quieto(a)"]
+      ]],
+      ["Comidas e bebidas",[
+        ["Apple","Maçã","Bread","Pão"],["Water","Água","Milk","Leite"],["I am hungry","Estou com fome","I am thirsty","Estou com sede"],["I like rice","Eu gosto de arroz","I like fruit","Eu gosto de frutas"]
+      ]],
+      ["Faça perguntas",[
+        ["Where?","Onde?","When?","Quando?"],["Why?","Por quê?","Who?","Quem?"],["Can you help me?","Você pode me ajudar?","Do you speak English?","Você fala inglês?"],["How much?","Quanto custa?","How many?","Quantos?"]
+      ]],
+      ["Passado e futuro",[
+        ["Yesterday","Ontem","Tomorrow","Amanhã"],["I went","Eu fui","I will go","Eu irei"],["Last week","Semana passada","Next week","Semana que vem"],["I studied","Eu estudei","I will study","Eu estudarei"]
+      ]],
+      ["Frases do cotidiano",[
+        ["I need help","Preciso de ajuda","I am ready","Estou pronto(a)"],["Excuse me","Com licença","I am sorry","Sinto muito"],["See you later","Até mais","Take care","Se cuide"],["Where is the bathroom?","Onde fica o banheiro?","Where is the station?","Onde fica a estação?"]
+      ]],
+      ["Conversas completas",[
+        ["Nice to meet you","Prazer em conhecer você","Good to see you","Que bom ver você"],["What do you do?","O que você faz?","Where are you from?","De onde você é?"],["I am from Brazil","Eu sou do Brasil","I live in Brazil","Eu moro no Brasil"],["Have a nice day","Tenha um bom dia","Good luck","Boa sorte"]
+      ]]
     ];
-
-    let currentUser = null;
-    let currentLesson = 0;
-    let presenceChannel = null;
-    let presenceHeartbeat = null;
-
-    function showMessage(message, error = false) {
-      $("authMessage").textContent = message;
-      $("authMessage").classList.toggle("error", error);
-    }
-
-    function showAuthTab(tab) {
-      const registering = tab === "register";
-
-      $("loginForm").classList.toggle("hidden", registering);
-      $("registerForm").classList.toggle("hidden", !registering);
-
-      $("loginTab").className = registering ? "secondary" : "primary";
-      $("registerTab").className = registering ? "primary" : "secondary";
-
-      showMessage("");
-    }
-
-    $("loginTab").addEventListener("click", () => showAuthTab("login"));
-    $("registerTab").addEventListener("click", () => showAuthTab("register"));
-
-    function progressKey() {
-      return currentUser ? "rlplus_progress_" + currentUser.id : "";
-    }
-
-    function getProgress() {
-      try {
-        return JSON.parse(localStorage.getItem(progressKey()) || "[]");
-      } catch {
-        return [];
-      }
-    }
-
-    function saveProgress(progress) {
-      localStorage.setItem(progressKey(), JSON.stringify(progress));
-      renderLessons();
-    }
-
-    function renderLessons() {
+    const shuffle = list => [...list].sort(() => Math.random() - 0.5);
+    function makeQuestion(pair) {
+      const [english, correct, wrongEnglish, wrong] = pair;
+      const options = shuffle([{text:correct,ok:true},{text:wrong,ok:false},{text:"Não sei",ok:false},{text:"Nenhuma das opções",ok:false}]);
+      return {question:'O que significa "'+english+'"?',options,explanation:'"'+english+'" significa "'+correct+'".'};
+    }    function renderLessons() {
       const progress = getProgress();
-      $("progressText").textContent =
-        progress.length + " de " + lessons.length + " aulas concluídas";
-      $("progressBar").style.width =
-        (progress.length / lessons.length * 100) + "%";
-
+      const done = progress.filter(x => x.startsWith("u")).length;
+      $("progressText").textContent = done + " de 10 unidades concluídas";
+      $("progressBar").style.width = (done / 10 * 100) + "%";
       $("lessonPath").replaceChildren();
-
-      lessons.forEach((lesson, index) => {
-        const done = progress.includes(index);
-        const card = document.createElement("div");
-        card.className = "lesson";
-
-        const heading = document.createElement("h3");
-        heading.textContent = (done ? "✅ " : "📘 ") + lesson.title;
-
-        const description = document.createElement("p");
-        description.className = "muted";
-        description.textContent = done
-          ? "Aula concluída"
-          : "Pratique inglês nesta aula.";
-
-        const button = document.createElement("button");
-        button.className = "primary";
-        button.type = "button";
-        button.textContent = done ? "Revisar aula" : "Começar aula";
-        button.addEventListener("click", () => openLesson(index));
-
-        card.append(heading, description, button);
-        $("lessonPath").appendChild(card);
+      units.forEach((unit,index) => {
+        const completed = progress.includes("u"+index);
+        const unlocked = index===0 || progress.includes("u"+(index-1));
+        const card=document.createElement("div");card.className="unit-card";
+        const h=document.createElement("h3");h.textContent=(completed?"✅ ":unlocked?"📗 ":"🔒 ")+"Unidade "+(index+1)+" — "+unit[0];
+        const p=document.createElement("p");p.className="muted";p.textContent=completed?"Unidade concluída":unlocked?"4 desafios com questões aleatórias":"Conclua a unidade anterior para liberar.";
+        const btn=document.createElement("button");btn.className=unlocked?"primary":"secondary";btn.textContent=completed?"Revisar unidade":unlocked?"Começar unidade":"Bloqueada";btn.disabled=!unlocked;btn.onclick=()=>openLesson(index);
+        card.append(h,p,btn);$("lessonPath").append(card);
       });
     }
-
     function openLesson(index) {
-      currentLesson = index;
-      const lesson = lessons[index];
-
+      currentUnit=index;currentLesson=0;
       $("lessonScreen").classList.remove("hidden");
-      $("lessonTitle").textContent = lesson.title;
-      $("lessonQuestion").textContent = lesson.question;
-      $("lessonMessage").textContent = "";
-      $("lessonAnswers").replaceChildren();
-
-      lesson.answers.forEach((answer, answerIndex) => {
-        const button = document.createElement("button");
-        button.className = "secondary answer";
-        button.type = "button";
-        button.textContent = answer;
-        button.addEventListener("click", () => checkAnswer(answerIndex));
-        $("lessonAnswers").appendChild(button);
-      });
-
-      $("lessonScreen").scrollIntoView({ behavior: "smooth" });
+      nextQuestion();
+      $("lessonScreen").scrollIntoView({behavior:"smooth"});
     }
-
-    function checkAnswer(answerIndex) {
-      const lesson = lessons[currentLesson];
-
-      if (answerIndex === lesson.correct) {
-        $("lessonMessage").textContent = "Muito bem! " + lesson.explanation;
-
-        const progress = getProgress();
-        if (!progress.includes(currentLesson)) {
-          progress.push(currentLesson);
-          saveProgress(progress);
-        }
+    function nextQuestion() {
+      const bank=units[currentUnit][1];
+      if(currentLesson>=bank.length){
+        const progress=getProgress();if(!progress.includes("u"+currentUnit)){progress.push("u"+currentUnit);saveProgress(progress);}
+        $("lessonTitle").textContent="🎉 Unidade concluída!";
+        $("lessonQuestion").textContent="Você terminou: "+units[currentUnit][0]+". A próxima unidade foi liberada!";
+        $("lessonAnswers").replaceChildren();$("lessonMessage").textContent="Muito bem! Continue sua jornada.";
+        return;
+      }
+      currentQuestion=makeQuestion(bank[currentLesson]);
+      $("lessonTitle").textContent="Unidade "+(currentUnit+1)+" · Desafio "+(currentLesson+1)+"/"+bank.length;
+      $("lessonQuestion").textContent=currentQuestion.question;
+      $("lessonMessage").textContent="";$("lessonAnswers").replaceChildren();
+      currentQuestion.options.forEach(option=>{
+        const btn=document.createElement("button");btn.className="secondary answer";btn.textContent=option.text;
+        btn.onclick=()=>checkAnswer(option.ok);$("lessonAnswers").append(btn);
+      });
+    }
+    function checkAnswer(correct) {
+      if(correct){
+        $("lessonMessage").textContent="Muito bem! "+currentQuestion.explanation;
+        currentLesson++;
+        const next=document.createElement("button");next.className="primary";next.textContent=currentLesson>=units[currentUnit][1].length?"Concluir unidade":"Próxima questão";next.onclick=nextQuestion;$("lessonAnswers").replaceChildren(next);
       } else {
-        $("lessonMessage").textContent =
-          "Ainda não! Tente novamente e confira o significado das palavras.";
+        $("lessonMessage").textContent="Quase! Tente outra alternativa. O Lingo acredita em você!";
       }
     }
-
-    $("backButton").addEventListener("click", () => {
-      $("lessonScreen").classList.add("hidden");
-      $("lessonPath").scrollIntoView({ behavior: "smooth" });
-    });
-
-    $("resetProgress").addEventListener("click", () => {
-      if (!currentUser) return;
-
-      if (confirm("Quer realmente reiniciar o progresso das aulas?")) {
-        saveProgress([]);
-        $("lessonScreen").classList.add("hidden");
-      }
-    });
-
-    function switchMainTab(tab) {
-      const isAdminTab = tab === "admin";
-      $("studentTab").classList.toggle("hidden", isAdminTab);
-      $("adminScreen").classList.toggle("hidden", !isAdminTab);
-      $("homeTabButton").className = isAdminTab ? "secondary" : "primary";
-      $("adminTabButton").className = isAdminTab ? "primary" : "secondary";
-      if (isAdminTab) loadAdminLogs();
-    }
-
-    $("homeTabButton").addEventListener("click", () => switchMainTab("home"));
-    $("adminTabButton").addEventListener("click", () => { window.location.href = "./admin.html"; });
-
-    // Logs básicos de eventos do aplicativo. A leitura é protegida por RLS no Supabase.
-    async function logEvent(eventType, details = "") {
-      if (!currentUser) return;
-      const allowed = ["login_success", "logout", "profile_error"];
-      if (!allowed.includes(eventType)) return;
-      const { error } = await supabaseClient.from("admin_audit_logs").insert({
-        user_id: currentUser.id,
-        account_email: currentUser.email || null,
-        event_type: eventType,
-        details: String(details).slice(0, 300)
-      });
-      if (error) console.warn("Não foi possível registrar o evento:", error.message);
-    }
-
-    async function loadAdminLogs() {
-      const message = $("adminMessage");
-      const target = $("adminLogs");
-      message.textContent = "Carregando registros...";
-      target.replaceChildren();
-
-      const { data, error } = await supabaseClient
-        .from("admin_audit_logs")
-        .select("id,event_type,account_email,details,created_at")
-        .order("created_at", { ascending: false })
-        .limit(100);
-
-      if (error) {
-        message.textContent = "Sem acesso aos logs. Confirme a função admin no app_metadata e as políticas RLS.";
-        message.classList.add("error");
-        return;
-      }
-
-      message.classList.remove("error");
-      message.textContent = data.length
-        ? data.length + " registro(s) recentes."
-        : "Nenhum registro encontrado.";
-
-      data.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "lesson";
-        const title = document.createElement("strong");
-        title.textContent = item.event_type;
-        const meta = document.createElement("p");
-        meta.className = "muted";
-        meta.textContent = (item.account_email || "Conta não identificada") +
-          " · " + new Date(item.created_at).toLocaleString("pt-BR");
-        const detail = document.createElement("p");
-        detail.textContent = item.details || "Sem detalhes adicionais.";
-        card.append(title, meta, detail);
-        target.appendChild(card);
-      });
-    }
-
-    $("refreshLogs").addEventListener("click", loadAdminLogs);
-
-    async function showLoggedIn(user) {
-      currentUser = user;
-
-      $("authScreen").classList.add("hidden");
-      $("homeScreen").classList.remove("hidden");
-      $("welcomeTitle").textContent =
-        "Olá, " + (user.user_metadata?.display_name || user.email || "estudante") + "!";
-
-      const isAdmin = user.app_metadata?.role === "admin";
-      $("appTabs").classList.toggle("hidden", !isAdmin);
-      $("adminTabButton").classList.toggle("hidden", !isAdmin);
-      $("adminScreen").classList.add("hidden");
-      $("studentTab").classList.remove("hidden");
-      $("homeTabButton").className = "primary";
-      $("adminTabButton").className = "secondary";
-
-      renderLessons();
-      startPresence();
-    }
-
-    async function showLoggedOut() {
-      currentUser = null;
-      stopPresence();
-
-      $("authScreen").classList.remove("hidden");
-      $("homeScreen").classList.add("hidden");
-      $("appTabs").classList.add("hidden");
-      $("adminScreen").classList.add("hidden");
-      $("studentTab").classList.remove("hidden");
-      $("lessonScreen").classList.add("hidden");
-      $("onlineCount").textContent = "● Conectando...";
-    }
-
-    $("registerForm").addEventListener("submit", async event => {
-      event.preventDefault();
-      showMessage("Criando sua conta...");
-
-      const name = $("registerName").value.trim();
-      const email = $("registerEmail").value.trim();
-      const password = $("registerPassword").value;
-
-      const { data, error } = await supabaseClient.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { display_name: name }
-        }
-      });
-
-      if (error) {
-        showMessage(error.message, true);
-        return;
-      }
-
-      if (data.session) {
-        await showLoggedIn(data.user);
-      } else {
-        showMessage(
-          "Conta criada! Confira seu e-mail para confirmar o cadastro e depois entre."
-        );
-        showAuthTab("login");
-        $("loginEmail").value = email;
-      }
-    });
-
-    $("loginForm").addEventListener("submit", async event => {
-      event.preventDefault();
-      showMessage("Entrando...");
-
-      const email = $("loginEmail").value.trim();
-      const password = $("loginPassword").value;
-
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) {
-        showMessage("Não foi possível entrar: " + error.message, true);
-        return;
-      }
-
-      await showLoggedIn(data.user);
-      currentUser = data.user;
-      await logEvent("login_success", "Login concluído no aplicativo.");
-    });
-
-    $("forgotButton").addEventListener("click", async () => {
-      const email = $("loginEmail").value.trim();
-
-      if (!email) {
-        showMessage("Digite seu e-mail no campo acima.", true);
-        return;
-      }
-
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + window.location.pathname
-      });
-
-      if (error) {
-        showMessage(error.message, true);
-      } else {
-        showMessage("Se a recuperação estiver habilitada, você receberá um e-mail.");
-      }
-    });
-
-    $("logoutButton").addEventListener("click", async () => {
-      await logEvent("logout", "Sessão encerrada pelo usuário.");
-      const { error } = await supabaseClient.auth.signOut();
-
-      if (error) {
-        alert("Erro ao sair: " + error.message);
-        return;
-      }
-
-      await showLoggedOut();
-      showMessage("Você saiu da conta.");
-    });
-
-    async function startPresence() {
-      stopPresence();
-
-      presenceChannel = supabaseClient.channel("readlanguage-plus-online", {
-        config: { presence: { key: currentUser.id } }
-      });
-
-      presenceChannel
-        .on("presence", { event: "sync" }, () => {
-          const state = presenceChannel.presenceState();
-          const uniqueUsers = Object.keys(state).length;
-          $("onlineCount").textContent = "● " + uniqueUsers + " online";
-        })
-        .subscribe(async status => {
-          if (status === "SUBSCRIBED" && currentUser) {
-            await presenceChannel.track({
-              online_at: new Date().toISOString()
-            });
-          }
-        });
-
-      presenceHeartbeat = setInterval(async () => {
-        if (presenceChannel && currentUser) {
-          await presenceChannel.track({
-            online_at: new Date().toISOString()
-          });
-        }
-      }, 30000);
-    }
-
-    function stopPresence() {
-      if (presenceHeartbeat) {
-        clearInterval(presenceHeartbeat);
-        presenceHeartbeat = null;
-      }
-
-      if (presenceChannel) {
-        supabaseClient.removeChannel(presenceChannel);
-        presenceChannel = null;
-      }
-    }
-
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-      if (session?.user) {
-        showLoggedIn(session.user);
-      } else if (event === "SIGNED_OUT") {
-        showLoggedOut();
-      }
-    });
-
-    async function initializeApp() {
-      const { data, error } = await supabaseClient.auth.getSession();
-
-      if (error) {
-        showMessage("Erro ao verificar a sessão: " + error.message, true);
-        return;
-      }
-
-      if (data.session?.user) {
-        await showLoggedIn(data.session.user);
-      } else {
-        await showLoggedOut();
-      }
-    }
-
-    initializeApp();
-  </script>
-</body>
-</html>
