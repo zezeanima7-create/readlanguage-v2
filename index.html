@@ -1546,5 +1546,13 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
       $("onlineCount").textContent = "● Erro de conexão";
     });
   </script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/readlanguage-v2/service-worker.js").catch(error => console.error("Falha ao registrar service worker:", error));
+      });
+    }
+  </script>
 </body>
 </html>
