@@ -320,9 +320,17 @@
     .subject-pill.active{background:#ff83ce;color:#31102a;border-color:#ffc0e7}
     .mission-card{padding:16px;border-radius:19px;margin:12px 0;background:#182d22;border:1px solid #42664c}
     .mission-reward{font-size:12px;color:#ffd68a;margin-top:8px}
-    .chest-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-    .chest{padding:14px 9px;border-radius:16px;background:#17291f;border:1px solid #526b57;text-align:center}
-    .chest button{width:100%;margin-top:8px}.inventory{padding:12px;border-radius:14px;background:#101e16;margin-top:14px}
+    .mission-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+    .mission-stats div{padding:14px;border-radius:16px;background:#102019;border:1px solid #355541}
+    .mission-stats strong{display:block;font-size:27px;color:#ff9bd7}.mission-stats span{font-size:12px;color:var(--muted)}
+    .badge-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+    .achievement-badge{padding:12px 7px;border-radius:16px;text-align:center;background:#14251c;border:1px solid #3a5943;opacity:.55}
+    .achievement-badge.earned{opacity:1;border:2px solid #ffd36e;background:#302b1b}
+    .achievement-badge b{display:block;font-size:12px;margin-top:6px}.achievement-badge small{font-size:10px;color:var(--muted)}
+    .monthly-medal{padding:16px;border-radius:16px;background:linear-gradient(120deg,#342a18,#1c291f);border:1px solid #9c8041}
+    .mission-card{padding:14px;margin:10px 0;border-radius:16px;background:#14251c;border:1px solid #355541}
+    .mission-card.done{opacity:.65;border-color:#64db91}.mission-card p{margin:5px 0 10px;font-size:13px;color:var(--muted)}
+    .mission-card button{width:100%}
     .profile-panel{display:flex;gap:12px;align-items:center}
 
     .league-card{margin:16px 0;padding:18px;border:1px solid #49614f;border-radius:22px;background:linear-gradient(145deg,#172c21,#101c16)}
@@ -332,7 +340,16 @@
     .league-row.me{border:2px solid #65ed98;background:#1b3b28}
     .league-rules{font-size:12px;color:#a8c0af;line-height:1.6;margin-top:14px}
 
-    .course-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+    .course-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    #languageGrid .course-tile{min-height:146px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:9px;border:0;border-radius:22px;background:transparent;box-shadow:none;padding:10px}
+    #languageGrid .course-icon{width:100%;height:92px;border-radius:20px;display:grid;place-items:center;font-size:52px;background:#08c99c}
+    #languageGrid .course-tile:nth-child(4n+1) .course-icon{background:#20aef0}
+    #languageGrid .course-tile:nth-child(4n+2) .course-icon{background:#08c99c}
+    #languageGrid .course-tile:nth-child(4n+3) .course-icon{background:#ff4e55}
+    #languageGrid .course-tile:nth-child(4n) .course-icon{background:#ffbd22}
+    #languageGrid .course-tile strong{font-size:18px}
+    #languageGrid .course-tile small{font-size:11px}
+    #languageGrid .course-tile:disabled{opacity:.7}
     .course-tile{min-height:92px;display:flex;align-items:center;gap:12px;text-align:left;padding:14px;border-radius:19px;background:#172b23;border:1px solid #345744;color:#f2fff6;box-shadow:0 5px 0 #09130e}
     .course-tile .course-icon{font-size:30px}
     .course-tile small{display:block;color:#a8c0af;font-size:11px;margin-top:4px}
@@ -533,16 +550,13 @@
         <label class="task-line"><input type="checkbox" data-daily-task="practice"> Fazer uma atividade de outra matéria</label>
       </div></section>
       <section id="missionsScreen" class="info-screen hidden"><div class="panel">
-        <p class="eyebrow">MISSÕES DA MINHOCA 🐛</p><h2>Complete missões e abra baús!</h2>
-        <div class="worm-path">
-          <article class="worm-task"><div class="worm-segment">📘</div><div><strong>Aprendiz dedicado</strong><p>Conclua uma unidade.</p></div></article>
-          <article class="worm-task"><div class="worm-segment">🔁</div><div><strong>Mestre da revisão</strong><p>Revise palavras e pratique.</p></div></article>
-          <article class="worm-task"><div class="worm-segment">🌱</div><div><strong>Rotina de estudo</strong><p>Estude em dias diferentes.</p></div></article>
-        </div>
-        <h3>Baús de recompensa</h3><div class="chest-grid" id="chestGrid"></div>
-        <div class="inventory" id="inventoryBox">💎 0 diamantes · 🧪 0 poções de XP · 🎨 0 skins</div>
-      </div></section>
-      <section id="policyScreen" class="info-screen hidden">
+  <p class="eyebrow">MISSÕES · READLANGUAGE</p><h2>Conquistas e insígnias 🏅</h2>
+  <p class="muted">Complete missões para ganhar pontos e desbloquear insígnias. Sem baús.</p>
+  <div class="mission-stats"><div><strong id="missionTotal">0</strong><span>Missões concluídas</span></div><div><strong id="missionPoints">0</strong><span>Pontos do mês</span></div></div>
+  <h3>Caçador de missões</h3><div id="hunterBadges" class="badge-grid"></div>
+  <h3>Medalha do mês</h3><div id="monthlyMedal" class="monthly-medal">🎖️ Complete missões para conquistar a medalha deste mês.</div>
+  <h3>Missões disponíveis</h3><div id="missionList"></div>
+</div></section><section id="policyScreen" class="info-screen hidden">
         <div class="panel">
           <p class="eyebrow">TRANSPARÊNCIA</p><h2>Política e segurança</h2>
           <h3>Privacidade</h3><p class="muted">O ReadLanguage usa autenticação do Supabase para gerenciar sua conta. Não compartilhe sua senha, códigos de acesso ou links privados.</p>
@@ -901,12 +915,36 @@
       $("inventoryBox").textContent="💎 "+inv.diamonds+" diamantes · 🧪 "+inv.potions+" poções de XP · 🎨 "+inv.skins+" skins";
     }
 
+
+    const missionDefinitions=[
+      {id:"lesson",title:"Primeiro passo",desc:"Conclua uma unidade de estudo."},
+      {id:"review",title:"Hora de revisar",desc:"Revise uma unidade já estudada."},
+      {id:"daily",title:"Um pouco por dia",desc:"Complete uma atividade de estudo hoje."},
+      {id:"language",title:"Explorador de idiomas",desc:"Experimente uma atividade de idioma."},
+      {id:"subject",title:"Mente curiosa",desc:"Estude uma matéria escolar."}
+    ];
+    function missionStoreKey(){return currentUser?"rl_missions_"+currentUser.id:"";}
+    function monthStamp(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");}
+    function readMissionData(){let d;try{d=JSON.parse(localStorage.getItem(missionStoreKey())||"null")}catch{}if(!d)d={completed:[],month:monthStamp(),monthlyPoints:0};if(d.month!==monthStamp()){d.month=monthStamp();d.monthlyPoints=0;}return d;}
+    function completeMission(id){const d=readMissionData();if(d.completed.includes(id))return;d.completed.push(id);d.monthlyPoints=(d.monthlyPoints||0)+1;localStorage.setItem(missionStoreKey(),JSON.stringify(d));renderMissions();}
+    function renderMissions(){
+      if(!currentUser)return;const d=readMissionData(),count=d.completed.length;
+      $("missionTotal").textContent=count;$("missionPoints").textContent=d.monthlyPoints||0;
+      const badgeLevels=[5,10,50];$("hunterBadges").replaceChildren();
+      badgeLevels.forEach((n,i)=>{const el=document.createElement("div");el.className="achievement-badge"+(count>=n?" earned":"");el.innerHTML=["🏹","🥈","🏆"][i];const b=document.createElement("b");b.textContent=["Caçador I","Caçador II","Caçador III"][i];const small=document.createElement("small");small.textContent=n+" missões";el.append(b,small);$("hunterBadges").append(el);});
+      const medal=$("monthlyMedal");medal.textContent=(d.monthlyPoints>=30?"🏅 Medalha do mês conquistada! ":"🎖️ Medalha mensal: ")+Math.min(d.monthlyPoints||0,30)+"/30 pontos · "+monthStamp();
+      $("missionList").replaceChildren();
+      missionDefinitions.forEach(m=>{const done=d.completed.includes(m.id),card=document.createElement("div");card.className="mission-card"+(done?" done":"");const title=document.createElement("strong");title.textContent=(done?"✓ ":"🎯 ")+m.title;const desc=document.createElement("p");desc.textContent=m.desc;const btn=document.createElement("button");btn.className=done?"secondary":"primary";btn.disabled=done;btn.textContent=done?"Concluída":"Marcar como concluída";btn.addEventListener("click",()=>completeMission(m.id));card.append(title,desc,btn);$("missionList").append(card);});
+      localStorage.setItem(missionStoreKey(),JSON.stringify(d));
+    }
+
     function switchMainTab(tab) {
       const isAdmin = tab === "logs";
       $("studentTab").classList.toggle("hidden", tab !== "home");
       $("adminScreen").classList.toggle("hidden", !isAdmin);
       $("tasksScreen").classList.toggle("hidden", tab !== "tasks");
       $("missionsScreen").classList.toggle("hidden",tab!=="missions");
+      if(tab==="missions")renderMissions();
       $("policyScreen").classList.toggle("hidden", tab !== "policy");
       $("creditsScreen").classList.toggle("hidden", tab !== "credits");
       $("aboutScreen").classList.toggle("hidden", tab !== "about");
@@ -1062,7 +1100,7 @@
       renderLessons();
       loadStreak();
       renderLeague();
-      setupProfile();renderChests();
+      setupProfile();renderMissions();
       $("topProfileName").textContent=user.user_metadata?.display_name||"Perfil";
       await startPresence();
     }
