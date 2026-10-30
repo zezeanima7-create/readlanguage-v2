@@ -281,6 +281,16 @@
         </div>
       </div>
 
+      <section id="adminPanel" class="panel hidden" aria-labelledby="adminTitle">
+        <div class="row" style="align-items:center;justify-content:space-between">
+          <h2 id="adminTitle">Painel privado — Logs</h2>
+          <button id="refreshLogs" class="secondary" type="button">Atualizar</button>
+        </div>
+        <p class="muted">Visível somente para contas com função admin autorizada no Supabase.</p>
+        <p id="adminMessage" class="message" role="status"></p>
+        <div id="adminLogs"></div>
+      </section>
+
       <div class="panel">
         <h2>Trilha de inglês</h2>
         <p class="muted">Complete uma aula para liberar seu progresso.</p>
@@ -490,6 +500,61 @@
       }
     });
 
+    // Logs básicos de eventos do aplicativo. A leitura é protegida por RLS no Supabase.
+    async function logEvent(eventType, details = "") {
+      if (!currentUser) return;
+      const allowed = ["login_success", "logout", "profile_error"];
+      if (!allowed.includes(eventType)) return;
+      const { error } = await supabaseClient.from("admin_audit_logs").insert({
+        user_id: currentUser.id,
+        account_email: currentUser.email || null,
+        event_type: eventType,
+        details: String(details).slice(0, 300)
+      });
+      if (error) console.warn("Não foi possível registrar o evento:", error.message);
+    }
+
+    async function loadAdminLogs() {
+      const message = $("adminMessage");
+      const target = $("adminLogs");
+      message.textContent = "Carregando registros...";
+      target.replaceChildren();
+
+      const { data, error } = await supabaseClient
+        .from("admin_audit_logs")
+        .select("id,event_type,account_email,details,created_at")
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (error) {
+        message.textContent = "Sem acesso aos logs. Confirme a função admin no app_metadata e as políticas RLS.";
+        message.classList.add("error");
+        return;
+      }
+
+      message.classList.remove("error");
+      message.textContent = data.length
+        ? data.length + " registro(s) recentes."
+        : "Nenhum registro encontrado.";
+
+      data.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "lesson";
+        const title = document.createElement("strong");
+        title.textContent = item.event_type;
+        const meta = document.createElement("p");
+        meta.className = "muted";
+        meta.textContent = (item.account_email || "Conta não identificada") +
+          " · " + new Date(item.created_at).toLocaleString("pt-BR");
+        const detail = document.createElement("p");
+        detail.textContent = item.details || "Sem detalhes adicionais.";
+        card.append(title, meta, detail);
+        target.appendChild(card);
+      });
+    }
+
+    $("refreshLogs").addEventListener("click", loadAdminLogs);
+
     async function showLoggedIn(user) {
       currentUser = user;
 
@@ -497,6 +562,10 @@
       $("homeScreen").classList.remove("hidden");
       $("welcomeTitle").textContent =
         "Olá, " + (user.user_metadata?.display_name || user.email || "estudante") + "!";
+
+      const isAdmin = user.app_metadata?.role === "admin";
+      $("adminPanel").classList.toggle("hidden", !isAdmin);
+      if (isAdmin) await loadAdminLogs();
 
       renderLessons();
       startPresence();
@@ -562,6 +631,8 @@
       }
 
       await showLoggedIn(data.user);
+      currentUser = data.user;
+      await logEvent("login_success", "Login concluído no aplicativo.");
     });
 
     $("forgotButton").addEventListener("click", async () => {
@@ -584,6 +655,7 @@
     });
 
     $("logoutButton").addEventListener("click", async () => {
+      await logEvent("logout", "Sessão encerrada pelo usuário.");
       const { error } = await supabaseClient.auth.signOut();
 
       if (error) {
