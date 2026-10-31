@@ -575,22 +575,6 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
   </aside>
 
   <main>
-    <section id="welcomeLanguageScreen" class="panel welcome-language">
-      <div class="auth-brandline"><div class="auth-logo" aria-hidden="true">📚</div><div><strong>ReadLanguage</strong><small>(BETA) em desenvolvimento</small></div></div>
-      <p class="eyebrow">PRIMEIRO ACESSO</p>
-      <h1 id="welcomeLanguageTitle">Qual idioma você fala?</h1>
-      <p class="muted" id="welcomeLanguageDescription">Escolha o idioma que deseja usar no aplicativo. Você poderá alterar depois.</p>
-      <div class="welcome-language-grid" id="welcomeLanguageGrid">
-        <button class="welcome-language-option" type="button" data-welcome-locale="pt"><span>🇧🇷</span><b>Português</b></button>
-        <button class="welcome-language-option" type="button" data-welcome-locale="en"><span>🇺🇸</span><b>English</b></button>
-        <button class="welcome-language-option" type="button" data-welcome-locale="es"><span>🇪🇸</span><b>Español</b></button>
-        <button class="welcome-language-option" type="button" data-welcome-locale="fr"><span>🇫🇷</span><b>Français</b></button>
-        <button class="welcome-language-option" type="button" data-welcome-locale="de"><span>🇩🇪</span><b>Deutsch</b></button>
-        <button class="welcome-language-option" type="button" data-welcome-locale="it"><span>🇮🇹</span><b>Italiano</b></button>
-      </div>
-      <button class="primary" id="confirmWelcomeLanguage" type="button" style="width:100%" disabled>Continuar</button>
-      <p class="muted" style="font-size:12px;margin-bottom:0">A seleção define sua preferência de idioma. Algumas partes ainda estão em português durante a fase beta.</p>
-    </section>
     <section id="authScreen" class="panel hidden">
       <div class="auth-brandline">
         <div class="auth-logo" aria-hidden="true">📚</div>
@@ -600,6 +584,10 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
       <p class="auth-intro">
         Aulas rápidas, palavras úteis e desafios para transformar alguns minutos do seu dia em aprendizado.
       </p>
+      <label for="loginLocale">Idioma do aplicativo</label>
+      <select id="loginLocale" class="locale-select">
+        <option value="pt">🇧🇷 Português</option><option value="en">🇺🇸 English</option><option value="es">🇪🇸 Español</option><option value="fr">🇫🇷 Français</option><option value="de">🇩🇪 Deutsch</option><option value="it">🇮🇹 Italiano</option><option value="ru">Русский</option>
+      </select>
 
       <div class="tabs">
         <button id="loginTab" class="primary" type="button">Entrar</button>
@@ -1296,23 +1284,14 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
     }
     $("siteLocale").value=localStorage.getItem("rl_site_locale")||"pt";
     applySiteLocale($("siteLocale").value);
-    $("siteLocale").addEventListener("change",e=>applySiteLocale(e.target.value));
-    const welcomeLocaleLabels={pt:"Qual idioma você fala?",en:"Which language do you speak?",es:"¿Qué idioma hablas?",fr:"Quelle langue parlez-vous?",de:"Welche Sprache sprichst du?",it:"Quale lingua parli?"};
-    let welcomeLocale=localStorage.getItem("rl_site_locale")||"";
-    function refreshWelcomeLanguage(){
-      document.querySelectorAll("[data-welcome-locale]").forEach(b=>b.classList.toggle("selected",b.dataset.welcomeLocale===welcomeLocale));
-      $("confirmWelcomeLanguage").disabled=!welcomeLocale;
-      $("welcomeLanguageTitle").textContent=welcomeLocaleLabels[welcomeLocale]||"Qual idioma você fala?";
-    }
-    document.querySelectorAll("[data-welcome-locale]").forEach(b=>b.addEventListener("click",()=>{welcomeLocale=b.dataset.welcomeLocale;refreshWelcomeLanguage();}));
-    $("confirmWelcomeLanguage").addEventListener("click",()=>{
-      if(!welcomeLocale)return;
-      localStorage.setItem("rl_site_locale",welcomeLocale);
-      $("siteLocale").value=welcomeLocale;
-      applySiteLocale(welcomeLocale);
-      $("welcomeLanguageScreen").classList.add("hidden");
-      $("authScreen").classList.remove("hidden");
+    $("siteLocale").addEventListener("change",e=>{applySiteLocale(e.target.value);$("loginLocale").value=e.target.value;if($("profileLocale"))$("profileLocale").value=e.target.value;});
+    $("loginLocale").value=localStorage.getItem("rl_site_locale")||"pt";
+    $("loginLocale").addEventListener("change",e=>{
+      $("siteLocale").value=e.target.value;
+      $("profileLocale").value=e.target.value;
+      applySiteLocale(e.target.value);
     });
+
     if(localStorage.getItem("rl_site_locale")){
       $("welcomeLanguageScreen").classList.add("hidden");
       $("authScreen").classList.remove("hidden");
