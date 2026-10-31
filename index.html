@@ -1265,6 +1265,14 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
       $("aboutScreen").classList.toggle("hidden", tab !== "about");
       $("leagueScreen").classList.toggle("hidden",tab!=="league");
       if(tab==="league")renderLeague();
+document.querySelectorAll(".nav-button").forEach(button => {
+        button.classList.toggle("active", button.dataset.tab === tab);
+      });
+      if (isAdmin) loadAdminLogs();
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+
+
       const interfaceTranslations={
       en:{
         "Idioma do site":"App language","Idioma do aplicativo":"App language","Início":"Home","Tarefas":"Tasks","Missões":"Missions","Ligas":"Leagues","Política":"Policy","Créditos":"Credits","Sobre":"About","Entrar":"Log in","Criar conta":"Sign up","E-mail":"Email","Senha":"Password","Entrar na conta":"Log in","Esqueci minha senha":"Forgot my password","ou entre com":"or continue with","Continuar com Google":"Continue with Google","Nome de exibição":"Display name","Como quer ser chamado":"What should we call you?","Crie uma senha":"Create a password","Mínimo de 6 caracteres":"At least 6 characters","Criar minha conta":"Create my account","Seu próximo idioma começa aqui":"Your next language starts here","Aprenda um novo idioma no seu ritmo.":"Learn a new language at your own pace.","Aulas rápidas, palavras úteis e desafios para transformar alguns minutos do seu dia em aprendizado.":"Quick lessons, useful words, and challenges to turn a few minutes a day into learning.","Seus dados de acesso são protegidos. Nunca compartilhe sua senha ou códigos de verificação.":"Your sign-in details are protected. Never share your password or verification codes.","Personalizar perfil":"Customize profile","Escolha seu visual.":"Choose your look.","Mais de 100 estilos de avatar":"Over 100 avatar styles","Salvar perfil":"Save profile","☰ Abrir menu":"☰ Open menu","Matemática":"Math","Xadrez":"Chess","Inglês":"English","Espanhol":"Spanish","Física":"Physics","Português":"Portuguese","ESCOLHA SUA JORNADA":"CHOOSE YOUR PATH","📚 Matérias escolares":"📚 School subjects","Em preparação":"Coming soon","Disponível":"Available","🌍 Idiomas":"🌍 Languages","O catálogo do ReadLanguage terá cinco idiomas. Inglês está disponível; os outros serão liberados quando suas aulas estiverem prontas.":"ReadLanguage will offer five languages. English is available; the others will be released when their lessons are ready.","dias seguidos":"day streak","Faça uma atividade hoje para começar!":"Complete an activity today to get started!","SUA OFENSIVA · ATUALIZA ÀS 00:00":"YOUR STREAK · UPDATES AT 00:00","SEU ESPAÇO DE APRENDIZADO":"YOUR LEARNING SPACE","Continue aprendendo um pouco a cada dia.":"Keep learning a little every day.","Seu progresso":"Your progress","Reiniciar progresso":"Reset progress","Sair da conta":"Log out","Ano escolar":"School year","Escolha seu nível":"Choose your level","Aula":"Lesson","Voltar às aulas":"Back to lessons","Voltar para matérias":"Back to subjects","LIGA SEMANAL":"WEEKLY LEAGUE","Temporada de 7 dias":"7-day season","Ganhe pontos acertando questões.":"Earn points by answering questions correctly.","ROTINA DE APRENDIZADO":"LEARNING ROUTINE","Missões do dia!":"Daily tasks!","Pequenos passos, grandes conquistas.":"Small steps, big achievements.","Marque cada tarefa quando terminar. Esta lista fica separada da aba de Missões.":"Check off each task when finished. This list is separate from Missions.","📘 Concluir uma aula":"📘 Complete a lesson","🔁 Revisar cinco palavras":"🔁 Review five words","🧠 Fazer uma atividade de outra matéria":"🧠 Complete an activity in another subject","Não precisa fazer tudo de uma vez. Um passo por dia já conta!":"You don't have to do everything at once. One step a day counts!","Conquistas e insígnias 🏅":"Achievements and badges 🏅","Complete missões para ganhar pontos e desbloquear insígnias. Sem baús.":"Complete missions to earn points and unlock badges. No chests.","Missões concluídas":"Missions completed","Pontos do mês":"Points this month","Caçador de missões":"Mission hunter","Medalha do mês":"Medal of the month","Missões disponíveis":"Available missions","TRANSPARÊNCIA":"TRANSPARENCY","Política e segurança":"Policy and safety","Privacidade":"Privacy","Dados e progresso":"Data and progress","Uso responsável":"Responsible use","RECONHECIMENTOS":"CREDITS","OLÁ, SOMOS O READLANGUAGE":"HELLO, WE ARE READLANGUAGE","Aprender pode ser simples.":"Learning can be simple.","Começar a aprender":"Start learning","Atualizar":"Refresh","Perfil":"Profile"
@@ -1285,45 +1293,44 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
         "Idioma do site":"Язык приложения","Idioma do aplicativo":"Язык приложения","Início":"Главная","Tarefas":"Задания","Missões":"Миссии","Ligas":"Лиги","Política":"Правила","Créditos":"Авторы","Sobre":"О проекте","Entrar":"Войти","Criar conta":"Создать аккаунт","E-mail":"Электронная почта","Senha":"Пароль","Entrar na conta":"Войти в аккаунт","Esqueci minha senha":"Забыли пароль","Continuar com Google":"Продолжить с Google","Matemática":"Математика","Xadrez":"Шахматы","Inglês":"Английский","Espanhol":"Испанский","Física":"Физика","Português":"Португальский","Em preparação":"Скоро","Disponível":"Доступно","Perfil":"Профиль","Salvar perfil":"Сохранить профиль","Aula":"Урок","Voltar às aulas":"Назад к урокам"
       }
     };
+    const originalLocaleNodes=new Map();
     function applySiteLocale(locale){
       const dict=interfaceTranslations[locale]||{};
       const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
       const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
       nodes.forEach(node=>{
         if(!node.parentElement||node.parentElement.closest("script,style,option,textarea"))return;
-        const raw=node.nodeValue,trim=raw.trim();if(!trim)return;
-        let translated=dict[trim];
-        if(!translated){
-          const match=Object.keys(dict).sort((a,b)=>b.length-a.length).find(k=>trim.includes(k));
-          if(match)translated=trim.replace(match,dict[match]);
+        if(!originalLocaleNodes.has(node))originalLocaleNodes.set(node,node.nodeValue);
+        const original=originalLocaleNodes.get(node),trim=original.trim();
+        if(!trim)return;
+        let result=original;
+        if(locale!=="pt"){
+          const keys=Object.keys(dict).sort((a,b)=>b.length-a.length);
+          for(const key of keys){if(trim===key){result=original.replace(trim,dict[key]);break;}if(trim.includes(key)){result=original.replace(key,dict[key]);break;}}
         }
-        if(translated)node.nodeValue=raw.replace(trim,translated);
+        node.nodeValue=result;
       });
       document.querySelectorAll("input[placeholder]").forEach(el=>{
-        const d=dict[el.placeholder];if(d)el.placeholder=d;
+        const original=el.dataset.originalPlaceholder||(el.dataset.originalPlaceholder=el.placeholder);
+        const dictPlaceholders={"voce@email.com":{en:"you@email.com",es:"tu@email.com",fr:"vous@email.com",de:"du@email.com",it:"tu@email.com",ru:"ваша почта"},"Sua senha":{en:"Your password",es:"Tu contraseña",fr:"Votre mot de passe",de:"Dein Passwort",it:"La tua password",ru:"Ваш пароль"}};
+        el.placeholder=locale==="pt"?original:(dictPlaceholders[original]?.[locale]||dict[original]||original);
       });
-      document.querySelectorAll("label[for='siteLocale'],label[for='loginLocale'],label[for='profileLocale']").forEach(el=>el.textContent=dict["Idioma do site"]||dict["Idioma do aplicativo"]||"Idioma");
+      document.querySelectorAll("label[for='siteLocale'],label[for='loginLocale'],label[for='profileLocale']").forEach(el=>{
+        const original=el.dataset.originalLabel||(el.dataset.originalLabel=el.textContent);
+        el.textContent=locale==="pt"?original:(dict[original]||dict["Idioma do aplicativo"]||"Language");
+      });
       document.documentElement.lang=({pt:"pt-BR",en:"en",es:"es",fr:"fr",de:"de",it:"it",ru:"ru"})[locale]||"pt-BR";
       localStorage.setItem("rl_site_locale",locale);
       $("siteLocale").value=locale;$("loginLocale").value=locale;
       if($("profileLocale"))$("profileLocale").value=locale;
     }
     $("siteLocale").value=localStorage.getItem("rl_site_locale")||"pt";
+    $("loginLocale").value=$("siteLocale").value;
     applySiteLocale($("siteLocale").value);
-    $("siteLocale").addEventListener("change",e=>{applySiteLocale(e.target.value);$("loginLocale").value=e.target.value;if($("profileLocale"))$("profileLocale").value=e.target.value;});
-    $("loginLocale").value=localStorage.getItem("rl_site_locale")||"pt";
-    $("loginLocale").addEventListener("change",e=>{
-      $("siteLocale").value=e.target.value;
-      if($("profileLocale"))$("profileLocale").value=e.target.value;
-      applySiteLocale(e.target.value);
-    });
+    $("siteLocale").addEventListener("change",e=>applySiteLocale(e.target.value));
+    $("loginLocale").addEventListener("change",e=>applySiteLocale(e.target.value));
+    $("profileLocale").addEventListener("change",e=>applySiteLocale(e.target.value));
 
-document.querySelectorAll(".nav-button").forEach(button => {
-        button.classList.toggle("active", button.dataset.tab === tab);
-      });
-      if (isAdmin) loadAdminLogs();
-      window.scrollTo({top:0,behavior:"smooth"});
-    }
 
     function closeDrawer() {
       $("sideDrawer").classList.remove("open");
