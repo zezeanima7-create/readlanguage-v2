@@ -1167,37 +1167,90 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
       }
     }
     let selectedSubject="math";
+    const extraCurriculum={
+      math:{
+        "Números e contagem":[["Quanto é 8 + 7?","15",["14","16","17"],"Some as unidades."],["Qual é o antecessor de 100?","99",["98","100","101"],"O antecessor é um a menos."],["Quanto é 6 × 4?","24",["20","22","26"],"Multiplicação representa grupos iguais."]],
+        "Adição básica":[["36 + 27 = ?","63",["53","62","64"],"Some unidades e dezenas."],["125 + 75 = ?","200",["190","210","225"],"Complete a centena."],["48 + 19 = ?","67",["57","66","68"],"Some 48 + 20 e retire 1."]],
+        "Subtração básica":[["80 − 35 = ?","45",["55","根35","50"],"Subtraia em partes."],["100 − 68 = ?","32",["38","42","28"],"Pense quanto falta de 68 até 100."],["54 − 19 = ?","35",["34","36","45"],"Subtrair 20 e somar 1 ajuda."]],
+        "Multiplicação":[["12 × 8 = ?","96",["86","92","108"],"Use 10 × 8 + 2 × 8."],["15 × 6 = ?","90",["80"," व्य90","96"],"Separe 10 × 6 e 5 × 6."],["9 × 7 = ?","63",["56"," e63","72"],"Lembre a tabuada do nove."]],
+        "Divisão":[["84 ÷ 7 = ?","12",["11","13","14"],"Qual número vezes 7 dá 84?"],["96 ÷ 8 = ?","12",["10","14","16"],"Use a operação inversa."],["144 ÷ 12 = ?","12",["11","13","14"],"12 × 12 = ?"]],
+        "Frações":[["Qual fração representa metade?","1/2",["1/3","2/3","1/4"],"Metade divide o todo em duas partes iguais."],["Quanto é 1/4 de 20?","5",["4","6","10"],"Divida 20 em quatro partes."],["Qual é maior?","3/4",["1/2","1/4","2/8"],"Compare partes de um mesmo inteiro."]],
+        "Porcentagem":[["20% de 100 é:","20",["10","25","_pct"],"20% significa 20 a cada 100."],["50% de 80 é:","40",["30","50","60"],"50% é a metade."],["10% de 250 é:","25",["20","15","35"],"Divida por 10."]]
+      },
+      chess:{
+        "Peças":[["Qual peça se move em formato de L?","Cavalo",["Bispo","Torre","Dama"],"Observe o movimento característico."],["Qual peça pode se mover na diagonal?","Bispo",["Torre","Cavalo","Rei"],"O bispo permanece na mesma cor de casas."],["Qual peça é a mais importante?","Rei",["Dama","Torre","Cavalo"],"A partida termina quando o rei sofre xeque-mate."]],
+        "Movimentos":[["Como a torre se move?","Linhas e colunas",["Somente diagonais","Em L","Uma casa por vez"],"A torre percorre fileiras retas."],["Como o bispo se move?","Diagonais",["Linhas e colunas","Em L","Somente uma casa"],"Seu movimento é diagonal."],["Como o cavalo se move?","Em L",["Em diagonal longa","Em linha reta","Qualquer distância"],"Ele anda duas casas numa direção e uma perpendicular."]],
+        "Xeque":[["O que é xeque?","Ataque direto ao rei",["Captura da dama","Empate automático","Promoção do peão"],"O rei está ameaçado."],["O que deve ser feito ao sair de xeque?","Eliminar a ameaça ao rei",["Ignorar o ataque","Mover qualquer peão","Trocar as damas"],"A segurança do rei é obrigatória."],["Xeque-mate significa:","Rei ameaçado sem defesa legal",["Rei protegido","Empate por repetição","Captura do rei"],"Não existe lance legal que resolva o xeque."]]
+      },
+      physics:{
+        "Movimento":[["Qual unidade mede velocidade no SI?","m/s",["kg","N","J"],"Velocidade relaciona distância e tempo."],["Um carro percorre 100 m em 10 s. Qual a velocidade média?","10 m/s",["5 m/s","20 m/s","100 m/s"],"Divida a distância pelo tempo."],["Quando um objeto muda de posição com o tempo, ele está em:","Movimento",["Repouso absoluto","Fusão","Condensação"],"Compare a posição em instantes diferentes."]],
+        "Força":[["Qual é a unidade de força?","Newton",["Joule","Watt","Pascal"],"A unidade homenageia Isaac Newton."],["Força pode alterar:","Movimento ou forma",["Somente a cor","A massa sempre","A temperatura sempre"],"Forças podem acelerar ou deformar corpos."],["Qual instrumento mede força?","Dinamômetro",["Termômetro","Barômetro","Cronômetro"],"Ele usa a deformação de uma mola."]],
+        "Energia":[["Qual energia está associada ao movimento?","Cinética",["Potencial gravitacional","Química","Nuclear"],"Pense na energia de um corpo em movimento."],["A energia potencial gravitacional depende da:","Altura",["Cor","Textura","Forma apenas"],"Considere a posição em relação ao solo."],["A unidade de energia no SI é:","Joule",["Newton","Metro","Segundo"],"É a mesma unidade do trabalho mecânico."]]
+      },
+      portuguese:{
+        "Leitura":[["Qual é a ideia principal de um texto?","O assunto central",["A última palavra","O título apenas","Uma informação secundária"],"Procure o que organiza as demais informações."],["Uma inferência é:","Uma conclusão baseada em pistas",["Uma cópia literal","Uma palavra difícil","Um título"],"A informação pode estar sugerida, não escrita diretamente."],["O contexto ajuda a:","Compreender o sentido",["Apagar o texto","Contar letras apenas","Trocar a pontuação"],"Observe as frases ao redor."]],
+        "Gramática":[["Qual palavra é um substantivo?","Cidade",["Correr","Bonito","Rapidamente"],"Substantivos nomeiam seres, lugares e ideias."],["Em 'Ela correu', o verbo é:","Correu",["Ela","O","Rápido"],"Verbos indicam ação, estado ou fenômeno."],["Qual é um adjetivo?"," cuidadoso",["Cuidado","Cuidar","Cuidadosamente"],"Adjetivos caracterizam substantivos."]],
+        "Ortografia":[["Qual forma está correta?","Exceção",["Excessão","Esceção","Eceção"],"A palavra tem cedilha e ç seguido de ã."],["Qual palavra tem acento?","Lâmpada",["Casa","Mesa","Livro"],"Observe a sílaba tônica e a regra de acentuação."],["Qual é a grafia correta?","Privilégio",["Previlegio","Privilêgio","Previlégio"],"A primeira sílaba é 'pri'."]]
+      },
+      spanish:{
+        "Saludos":[["Como se diz 'bom dia' em espanhol?","Buenos días",["Buenas noches","Gracias","Adiós"],"É uma saudação usada pela manhã."],["'Gracias' significa:","Obrigado(a)",["Por favor","Adeus","Bom dia"],"É uma expressão de agradecimento."],["Como se diz 'olá'?","Hola",["Hasta luego","Perdón","Buenas noches"],"Saudação simples."]],
+        "Números":[["'Tres' significa:","Três",["Dois","Quatro","Cinco"],"Número depois de dos."],["'Ocho' significa:","Oito",["Seis","Sete","Nove"],"Número par entre siete e nueve."],["Como se diz dez?","Diez",["Doce","Dos","Once"],"Começa com d."]],
+        "Verbos":[["'Comer' significa:","Comer",["Correr","Dormir","Escrever"],"É igual ao português."],["'Hablar' significa:","Falar",["Ler","Abrir","Viver"],"Ação de conversar."],["'Vivir' significa:","Viver",["Beber","Ver","Vir"],"Verbo relacionado à vida."]]
+      }
+    };
+    const subjectProgressKey=()=> "rl_subject_progress_"+(currentUser?.id||"guest")+"_"+selectedSubject+"_"+(selectedSubject==="math"?selectedMathYear:"all");
+    function getSubjectProgress(){try{return JSON.parse(localStorage.getItem(subjectProgressKey())||"[]");}catch{return [];}}
     function renderSubjectPath(){
       const meta=subjectMeta[selectedSubject]||subjectMeta.math;
       $("heroLevel").textContent=meta[2];$("heroTopic").textContent=meta[3];
       renderMathYearPicker();
-      const isEnglish=selectedSubject==="english";
-      $("learningPathPanel").classList.toggle("subject-coming-soon",!isEnglish);
-      if(isEnglish){renderLessons();return;}
+      if(selectedSubject==="english"){ $("learningPathPanel").classList.remove("subject-coming-soon");renderLessons();return;}
+      $("learningPathPanel").classList.remove("subject-coming-soon");
       $("lessonPath").replaceChildren();
       const topics=selectedSubject==="math"?(mathYearTopics[selectedMathYear]||mathYearTopics[1]):(subjectTopics[selectedSubject]||subjectTopics.math);
-      const mathProgress=selectedSubject==="math"?getMathProgress():[];
+      const progress=getSubjectProgress();
       topics.forEach((topic,index)=>{
-        const done=selectedSubject==="math"&&mathProgress.includes(index);
-        const unlocked=index===0||(selectedSubject==="math"&&mathProgress.includes(index-1));
+        const done=progress.includes(index),unlocked=index===0||progress.includes(index-1);
         const btn=document.createElement("button");btn.type="button";btn.className="path-node "+(done?"completed":unlocked?"current":"locked");
         btn.textContent=done?"✓":unlocked?"★":"🔒";btn.disabled=!unlocked;btn.title="Unidade "+(index+1)+" — "+topic;
-        if(selectedSubject==="math")btn.addEventListener("click",()=>openMathUnit(index));
+        btn.addEventListener("click",()=>openSubjectUnit(index,topic));
         const caption=document.createElement("div");caption.className="path-caption";caption.textContent="Unidade "+(index+1)+" · "+topic;
         $("lessonPath").append(btn,caption);
       });
     }
+    function openSubjectUnit(index,topic){
+      const bank=(extraCurriculum[selectedSubject]||{})[topic]||[
+        ["Qual alternativa descreve melhor "+topic.toLowerCase()+"?","Conceito fundamental",["Exemplo incorreto","Ideia sem relação","Definição oposta"],"Leia o conceito e identifique a ideia central."],
+        ["Por que estudar "+topic.toLowerCase()+"?","Para compreender e aplicar o conteúdo",["Para decorar sem entender","Para evitar exemplos","Para ignorar conceitos"],"Pense numa aplicação prática."],
+        ["Ao estudar "+topic.toLowerCase()+", o que é importante?","Entender o conceito e praticar",["Apenas memorizar o título","Pular os exemplos","Não revisar"],"A prática ajuda a consolidar o aprendizado."]
+      ];
+      let step=0,score=0;
+      $("lessonScreen").classList.remove("hidden");
+      const show=()=>{
+        if(step>=bank.length){
+          const p=getSubjectProgress();if(!p.includes(index))p.push(index);localStorage.setItem(subjectProgressKey(),JSON.stringify(p));
+          $("lessonTitle").textContent="Unidade concluída!";
+          $("lessonQuestion").textContent="Você acertou "+score+" de "+bank.length+" questões em "+topic+".";
+          $("lessonAnswers").replaceChildren();
+          const back=document.createElement("button");back.className="primary";back.textContent="Voltar à trilha";back.onclick=()=>{$("lessonScreen").classList.add("hidden");renderSubjectPath();};$("lessonAnswers").append(back);
+          $("lessonMessage").textContent="Seu progresso foi salvo neste aparelho.";return;
+        }
+        const q=bank[step],choices=shuffle([{text:q[1],ok:true},...q[2].map(x=>({text:x,ok:false}))]);
+        $("lessonTitle").textContent=metaLessonTitle(selectedSubject)+" · "+topic+" · "+(step+1)+"/"+bank.length;
+        $("lessonQuestion").textContent=q[0];$("lessonMessage").textContent="";
+        $("lessonAnswers").replaceChildren();
+        choices.forEach(choice=>{const btn=document.createElement("button");btn.type="button";btn.className="secondary answer";btn.textContent=choice.text;btn.onclick=()=>{
+          $("lessonAnswers").querySelectorAll("button").forEach(x=>x.disabled=true);
+          if(choice.ok){score++;$("lessonMessage").textContent="Muito bem! "+q[3];}
+          else $("lessonMessage").textContent="Resposta correta: "+q[1]+". "+q[3];
+          const next=document.createElement("button");next.className="primary";next.textContent=step===bank.length-1?"Concluir unidade":"Próxima questão";next.onclick=()=>{step++;show();};$("lessonAnswers").append(next);
+        };$("lessonAnswers").append(btn);});
+      };
+      show();$("lessonScreen").scrollIntoView({behavior:"smooth"});
+    }
+    function metaLessonTitle(id){return subjectMeta[id]?.[1]||"Estudo";}
     function mathProgressKey(){return "rl_math_progress_"+(currentUser?.id||"guest");}
     function getMathProgress(){try{return JSON.parse(localStorage.getItem(mathProgressKey())||"[]");}catch{return [];}}
-    function openMathUnit(index){
-      $("lessonScreen").classList.remove("hidden");
-      $("lessonTitle").textContent="Matemática · Unidade "+(index+1);
-      $("lessonQuestion").textContent=mathUnits[index]+" — conteúdo desta unidade será desenvolvido nesta sequência progressiva.";
-      $("lessonAnswers").replaceChildren();
-      const back=document.createElement("button");back.className="primary";back.textContent="Voltar à trilha";back.onclick=()=>$("lessonScreen").classList.add("hidden");
-      $("lessonAnswers").append(back);$("lessonMessage").textContent="Do básico até conteúdos de nível universitário.";
-      $("lessonScreen").scrollIntoView({behavior:"smooth"});
-    }
     function selectSubject(id){
       selectedSubject=subjectMeta[id]?id:"math";
       const meta=subjectMeta[selectedSubject];
