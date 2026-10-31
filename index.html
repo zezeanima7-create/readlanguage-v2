@@ -1288,19 +1288,11 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
     $("loginLocale").value=localStorage.getItem("rl_site_locale")||"pt";
     $("loginLocale").addEventListener("change",e=>{
       $("siteLocale").value=e.target.value;
-      $("profileLocale").value=e.target.value;
+      if($("profileLocale"))$("profileLocale").value=e.target.value;
       applySiteLocale(e.target.value);
     });
 
-    if(localStorage.getItem("rl_site_locale")){
-      $("welcomeLanguageScreen").classList.add("hidden");
-      $("authScreen").classList.remove("hidden");
-    }else{
-      $("welcomeLanguageScreen").classList.remove("hidden");
-      $("authScreen").classList.add("hidden");
-    }
-    refreshWelcomeLanguage();
-    document.querySelectorAll(".nav-button").forEach(button => {
+document.querySelectorAll(".nav-button").forEach(button => {
         button.classList.toggle("active", button.dataset.tab === tab);
       });
       if (isAdmin) loadAdminLogs();
@@ -1416,7 +1408,6 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
     async function showLoggedIn(user) {
       if (!user) return;
       currentUser = user;
-      $("welcomeLanguageScreen").classList.add("hidden");
       $("authScreen").classList.add("hidden");
       $("homeScreen").classList.remove("hidden");
       $("welcomeTitle").textContent =
