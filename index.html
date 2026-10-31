@@ -941,6 +941,7 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
     function nextQuestion() {
       const bank=currentQuestions;
       if(currentLesson>=bank.length){
+        updateStreak();
         const progress=getProgress();if(!progress.includes("l"+currentUnit)){progress.push("l"+currentUnit);saveProgress(progress);}
         const group=Math.floor(currentUnit/lessonsPerUnit);
         const unitDone=unitIsComplete(group,progress);
@@ -967,7 +968,6 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
       localStorage.setItem(key,String(lives));
       $("lifeCount").textContent=lives;
       if(correct){
-        updateStreak();
         $("lessonMessage").textContent="Muito bem! "+currentQuestion.explanation+" Energia: "+lives+"/20.";
         currentLesson++;
         const next=document.createElement("button");next.className="primary";next.textContent=currentLesson>=currentQuestions.length?"Concluir unidade":"Próxima questão";next.onclick=nextQuestion;$("lessonAnswers").replaceChildren(next);
@@ -1240,6 +1240,7 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
       $("lessonScreen").classList.remove("hidden");
       const show=()=>{
         if(step>=bank.length){
+          updateStreak();
           const p=getSubjectProgress();if(!p.includes(index))p.push(index);localStorage.setItem(subjectProgressKey(),JSON.stringify(p));
           $("lessonTitle").textContent="Unidade concluída!";
           $("lessonQuestion").textContent="Você acertou "+score+" de "+bank.length+" questões em "+topic+".";
