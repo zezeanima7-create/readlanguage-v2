@@ -1265,22 +1265,48 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
       $("aboutScreen").classList.toggle("hidden", tab !== "about");
       $("leagueScreen").classList.toggle("hidden",tab!=="league");
       if(tab==="league")renderLeague();
-      const siteTexts={
-      pt:{home:"Início",tasks:"Tarefas",policy:"Política",credits:"Créditos",about:"Sobre",streak:"dias seguidos"},
-      en:{home:"Home",tasks:"Tasks",policy:"Policy",credits:"Credits",about:"About",streak:"day streak"},
-      es:{home:"Inicio",tasks:"Tareas",policy:"Política",credits:"Créditos",about:"Acerca de",streak:"días seguidos"},
-      ru:{home:"Главная",tasks:"Задания",policy:"Правила",credits:"Авторы",about:"О проекте",streak:"дней подряд"}
+      const interfaceTranslations={
+      en:{
+        "Idioma do site":"App language","Idioma do aplicativo":"App language","Início":"Home","Tarefas":"Tasks","Missões":"Missions","Ligas":"Leagues","Política":"Policy","Créditos":"Credits","Sobre":"About","Entrar":"Log in","Criar conta":"Sign up","E-mail":"Email","Senha":"Password","Entrar na conta":"Log in","Esqueci minha senha":"Forgot my password","ou entre com":"or continue with","Continuar com Google":"Continue with Google","Nome de exibição":"Display name","Como quer ser chamado":"What should we call you?","Crie uma senha":"Create a password","Mínimo de 6 caracteres":"At least 6 characters","Criar minha conta":"Create my account","Seu próximo idioma começa aqui":"Your next language starts here","Aprenda um novo idioma no seu ritmo.":"Learn a new language at your own pace.","Aulas rápidas, palavras úteis e desafios para transformar alguns minutos do seu dia em aprendizado.":"Quick lessons, useful words, and challenges to turn a few minutes a day into learning.","Seus dados de acesso são protegidos. Nunca compartilhe sua senha ou códigos de verificação.":"Your sign-in details are protected. Never share your password or verification codes.","Personalizar perfil":"Customize profile","Escolha seu visual.":"Choose your look.","Mais de 100 estilos de avatar":"Over 100 avatar styles","Salvar perfil":"Save profile","☰ Abrir menu":"☰ Open menu","Matemática":"Math","Xadrez":"Chess","Inglês":"English","Espanhol":"Spanish","Física":"Physics","Português":"Portuguese","ESCOLHA SUA JORNADA":"CHOOSE YOUR PATH","📚 Matérias escolares":"📚 School subjects","Em preparação":"Coming soon","Disponível":"Available","🌍 Idiomas":"🌍 Languages","O catálogo do ReadLanguage terá cinco idiomas. Inglês está disponível; os outros serão liberados quando suas aulas estiverem prontas.":"ReadLanguage will offer five languages. English is available; the others will be released when their lessons are ready.","dias seguidos":"day streak","Faça uma atividade hoje para começar!":"Complete an activity today to get started!","SUA OFENSIVA · ATUALIZA ÀS 00:00":"YOUR STREAK · UPDATES AT 00:00","SEU ESPAÇO DE APRENDIZADO":"YOUR LEARNING SPACE","Continue aprendendo um pouco a cada dia.":"Keep learning a little every day.","Seu progresso":"Your progress","Reiniciar progresso":"Reset progress","Sair da conta":"Log out","Ano escolar":"School year","Escolha seu nível":"Choose your level","Aula":"Lesson","Voltar às aulas":"Back to lessons","Voltar para matérias":"Back to subjects","LIGA SEMANAL":"WEEKLY LEAGUE","Temporada de 7 dias":"7-day season","Ganhe pontos acertando questões.":"Earn points by answering questions correctly.","ROTINA DE APRENDIZADO":"LEARNING ROUTINE","Missões do dia!":"Daily tasks!","Pequenos passos, grandes conquistas.":"Small steps, big achievements.","Marque cada tarefa quando terminar. Esta lista fica separada da aba de Missões.":"Check off each task when finished. This list is separate from Missions.","📘 Concluir uma aula":"📘 Complete a lesson","🔁 Revisar cinco palavras":"🔁 Review five words","🧠 Fazer uma atividade de outra matéria":"🧠 Complete an activity in another subject","Não precisa fazer tudo de uma vez. Um passo por dia já conta!":"You don't have to do everything at once. One step a day counts!","Conquistas e insígnias 🏅":"Achievements and badges 🏅","Complete missões para ganhar pontos e desbloquear insígnias. Sem baús.":"Complete missions to earn points and unlock badges. No chests.","Missões concluídas":"Missions completed","Pontos do mês":"Points this month","Caçador de missões":"Mission hunter","Medalha do mês":"Medal of the month","Missões disponíveis":"Available missions","TRANSPARÊNCIA":"TRANSPARENCY","Política e segurança":"Policy and safety","Privacidade":"Privacy","Dados e progresso":"Data and progress","Uso responsável":"Responsible use","RECONHECIMENTOS":"CREDITS","OLÁ, SOMOS O READLANGUAGE":"HELLO, WE ARE READLANGUAGE","Aprender pode ser simples.":"Learning can be simple.","Começar a aprender":"Start learning","Atualizar":"Refresh","Perfil":"Profile"
+      },
+      es:{
+        "Idioma do site":"Idioma de la aplicación","Idioma do aplicativo":"Idioma de la aplicación","Início":"Inicio","Tarefas":"Tareas","Missões":"Misiones","Ligas":"Ligas","Política":"Política","Créditos":"Créditos","Sobre":"Acerca de","Entrar":"Entrar","Criar conta":"Crear cuenta","E-mail":"Correo electrónico","Senha":"Contraseña","Entrar na conta":"Iniciar sesión","Esqueci minha senha":"Olvidé mi contraseña","ou entre com":"o continúa con","Continuar com Google":"Continuar con Google","Nome de exibição":"Nombre para mostrar","Como quer ser chamado":"¿Cómo quieres que te llamemos?","Crie uma senha":"Crea una contraseña","Mínimo de 6 caracteres":"Mínimo de 6 caracteres","Criar minha conta":"Crear mi cuenta","Seu próximo idioma começa aqui":"Tu próximo idioma comienza aquí","Aprenda um novo idioma no seu ritmo.":"Aprende un nuevo idioma a tu ritmo.","Personalizar perfil":"Personalizar perfil","Escolha seu visual.":"Elige tu apariencia.","Mais de 100 estilos de avatar":"Más de 100 estilos de avatar","Salvar perfil":"Guardar perfil","☰ Abrir menu":"☰ Abrir menú","Matemática":"Matemáticas","Xadrez":"Ajedrez","Inglês":"Inglés","Espanhol":"Español","Física":"Física","Português":"Portugués","ESCOLHA SUA JORNADA":"ELIGE TU CAMINO","📚 Matérias escolares":"📚 Materias escolares","Em preparação":"En preparación","Disponível":"Disponible","🌍 Idiomas":"🌍 Idiomas","dias seguidos":"días seguidos","Faça uma atividade hoje para começar!":"¡Haz una actividad hoy para empezar!","Seu progresso":"Tu progreso","Reiniciar progresso":"Reiniciar progreso","Sair da conta":"Cerrar sesión","Aula":"Lección","Voltar às aulas":"Volver a las lecciones","Missões do dia!":"¡Tareas del día!","Pequenos passos, grandes conquistas.":"Pequeños pasos, grandes logros.","Conquistas e insígnias 🏅":"Logros e insignias 🏅","Política e segurança":"Política y seguridad","Privacidade":"Privacidad","Dados e progresso":"Datos y progreso","Uso responsável":"Uso responsable","Aprender pode ser simples.":"Aprender puede ser sencillo.","Começar a aprender":"Empezar a aprender","Atualizar":"Actualizar","Perfil":"Perfil"
+      },
+      fr:{
+        "Idioma do site":"Langue de l’application","Idioma do aplicativo":"Langue de l’application","Início":"Accueil","Tarefas":"Tâches","Missões":"Missions","Ligas":"Ligues","Política":"Politique","Créditos":"Crédits","Sobre":"À propos","Entrar":"Connexion","Criar conta":"Créer un compte","E-mail":"E-mail","Senha":"Mot de passe","Entrar na conta":"Se connecter","Esqueci minha senha":"Mot de passe oublié","ou entre com":"ou continuer avec","Continuar com Google":"Continuer avec Google","Nome de exibição":"Nom affiché","Crie uma senha":"Créer un mot de passe","Matemática":"Mathématiques","Xadrez":"Échecs","Inglês":"Anglais","Espanhol":"Espagnol","Física":"Physique","Português":"Portugais","Em preparação":"En préparation","Disponível":"Disponible","Perfil":"Profil","Salvar perfil":"Enregistrer le profil","Aula":"Leçon","Voltar às aulas":"Retour aux leçons"
+      },
+      de:{
+        "Idioma do site":"App-Sprache","Idioma do aplicativo":"App-Sprache","Início":"Startseite","Tarefas":"Aufgaben","Missões":"Missionen","Ligas":"Ligen","Política":"Richtlinien","Créditos":"Mitwirkende","Sobre":"Über uns","Entrar":"Anmelden","Criar conta":"Konto erstellen","E-mail":"E-Mail","Senha":"Passwort","Entrar na conta":"Anmelden","Esqueci minha senha":"Passwort vergessen","Continuar com Google":"Mit Google fortfahren","Matemática":"Mathematik","Xadrez":"Schach","Inglês":"Englisch","Espanhol":"Spanisch","Física":"Physik","Português":"Portugiesisch","Em preparação":"In Vorbereitung","Disponível":"Verfügbar","Perfil":"Profil","Salvar perfil":"Profil speichern","Aula":"Lektion","Voltar às aulas":"Zurück zu den Lektionen"
+      },
+      it:{
+        "Idioma do site":"Lingua dell'app","Idioma do aplicativo":"Lingua dell'app","Início":"Home","Tarefas":"Attività","Missões":"Missioni","Ligas":"Leghe","Política":"Informativa","Créditos":"Crediti","Sobre":"Informazioni","Entrar":"Accedi","Criar conta":"Crea account","E-mail":"E-mail","Senha":"Password","Entrar na conta":"Accedi","Esqueci minha senha":"Password dimenticata","Continuar com Google":"Continua con Google","Matemática":"Matematica","Xadrez":"Scacchi","Inglês":"Inglese","Espanhol":"Spagnolo","Física":"Fisica","Português":"Portoghese","Em preparação":"In preparazione","Disponível":"Disponibile","Perfil":"Profilo","Salvar perfil":"Salva profilo","Aula":"Lezione","Voltar às aulas":"Torna alle lezioni"
+      },
+      ru:{
+        "Idioma do site":"Язык приложения","Idioma do aplicativo":"Язык приложения","Início":"Главная","Tarefas":"Задания","Missões":"Миссии","Ligas":"Лиги","Política":"Правила","Créditos":"Авторы","Sobre":"О проекте","Entrar":"Войти","Criar conta":"Создать аккаунт","E-mail":"Электронная почта","Senha":"Пароль","Entrar na conta":"Войти в аккаунт","Esqueci minha senha":"Забыли пароль","Continuar com Google":"Продолжить с Google","Matemática":"Математика","Xadrez":"Шахматы","Inglês":"Английский","Espanhol":"Испанский","Física":"Физика","Português":"Португальский","Em preparação":"Скоро","Disponível":"Доступно","Perfil":"Профиль","Salvar perfil":"Сохранить профиль","Aula":"Урок","Voltar às aulas":"Назад к урокам"
+      }
     };
     function applySiteLocale(locale){
-      const t=siteTexts[locale]||siteTexts.pt;
-      document.querySelector('[data-tab="home"] span').textContent=t.home;
-      document.querySelector('[data-tab="tasks"] span').textContent=t.tasks;
-      document.querySelector('[data-tab="policy"] span').textContent=t.policy;
-      document.querySelector('[data-tab="credits"] span').textContent=t.credits;
-      document.querySelector('[data-tab="about"] span').textContent=t.about;
-      $("streakLabel").textContent=t.streak;
-      document.documentElement.lang=({pt:"pt-BR",en:"en",es:"es",ru:"ru"})[locale]||"pt-BR";
+      const dict=interfaceTranslations[locale]||{};
+      const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+      const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+      nodes.forEach(node=>{
+        if(!node.parentElement||node.parentElement.closest("script,style,option,textarea"))return;
+        const raw=node.nodeValue,trim=raw.trim();if(!trim)return;
+        let translated=dict[trim];
+        if(!translated){
+          const match=Object.keys(dict).sort((a,b)=>b.length-a.length).find(k=>trim.includes(k));
+          if(match)translated=trim.replace(match,dict[match]);
+        }
+        if(translated)node.nodeValue=raw.replace(trim,translated);
+      });
+      document.querySelectorAll("input[placeholder]").forEach(el=>{
+        const d=dict[el.placeholder];if(d)el.placeholder=d;
+      });
+      document.querySelectorAll("label[for='siteLocale'],label[for='loginLocale'],label[for='profileLocale']").forEach(el=>el.textContent=dict["Idioma do site"]||dict["Idioma do aplicativo"]||"Idioma");
+      document.documentElement.lang=({pt:"pt-BR",en:"en",es:"es",fr:"fr",de:"de",it:"it",ru:"ru"})[locale]||"pt-BR";
       localStorage.setItem("rl_site_locale",locale);
+      $("siteLocale").value=locale;$("loginLocale").value=locale;
+      if($("profileLocale"))$("profileLocale").value=locale;
     }
     $("siteLocale").value=localStorage.getItem("rl_site_locale")||"pt";
     applySiteLocale($("siteLocale").value);
