@@ -661,7 +661,11 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
       <div class="panel hidden" id="profilePanel">
         <div class="profile-panel"><span id="profilePreview" class="profile-avatar">🐛</span><div><h3>Personalizar perfil</h3><p class="muted">Escolha seu visual.</p></div></div>
         <label for="profileStyle">Mais de 100 estilos de avatar</label><select id="profileStyle" class="locale-select"></select>
-        <button class="primary" id="saveProfile" type="button">Salvar visual</button><button class="secondary" id="profileMenuButton" type="button">☰ Abrir menu</button>
+        <label for="profileLocale" style="margin-top:14px">Idioma do aplicativo</label>
+        <select id="profileLocale" class="locale-select">
+          <option value="pt">🇧🇷 Português</option><option value="en">🇺🇸 English</option><option value="es">🇪🇸 Español</option><option value="fr">🇫🇷 Français</option><option value="de">🇩🇪 Deutsch</option><option value="it">🇮🇹 Italiano</option><option value="ru">Русский</option>
+        </select>
+        <button class="primary" id="saveProfile" type="button">Salvar perfil</button><button class="secondary" id="profileMenuButton" type="button">☰ Abrir menu</button>
       </div>
       <div class="subject-picker">
         <div class="subject-strip" id="subjectStrip">
@@ -1127,6 +1131,7 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
       sel.replaceChildren();
       for(let i=0;i<120;i++){const op=document.createElement("option");op.value=String(i);op.textContent="Estilo "+(i+1)+" · "+avatarStyles[i%avatarStyles.length];sel.append(op);}
       const saved=localStorage.getItem(profileKey())||"0";sel.value=saved;updateAvatar();
+      const localeSelect=$("profileLocale");if(localeSelect)localeSelect.value=localStorage.getItem("rl_site_locale")||"pt";
     }
     function updateAvatar(){const v=Number($("profileStyle")?.value||0),emoji=avatarStyles[v%avatarStyles.length];$("profilePreview").textContent=emoji;$("topAvatar").textContent=emoji;}
     $("profileOpen").addEventListener("click",()=>$("profilePanel").classList.toggle("hidden"));
@@ -1134,7 +1139,7 @@ main{width:min(100% - 28px,760px)!important;max-width:760px!important;margin:22p
     $("selectedSubjectTop").addEventListener("click",()=>document.getElementById("subjectStrip").scrollIntoView({behavior:"smooth",block:"center"}));
     $("heroBack").addEventListener("click",()=>document.getElementById("subjectStrip").scrollIntoView({behavior:"smooth",block:"center"}));
     $("profileStyle").addEventListener("change",updateAvatar);
-    $("saveProfile").addEventListener("click",()=>{localStorage.setItem(profileKey(),$("profileStyle").value);updateAvatar();$("profilePanel").classList.add("hidden");});
+    $("saveProfile").addEventListener("click",()=>{localStorage.setItem(profileKey(),$("profileStyle").value);updateAvatar();const locale=$("profileLocale").value;$("siteLocale").value=locale;applySiteLocale(locale);$("profilePanel").classList.add("hidden");});
     const subjectMeta={math:["➗","Matemática","ARITMÉTICA 1","Divida"],chess:["♟","Xadrez","XADREZ 1","Movimentos básicos"],english:["🇺🇸","Inglês","INGLÊS 1","Cumprimente"],spanish:["🇪🇸","Espanhol","ESPANHOL 1","Saludos"],physics:["⚛️","Física","FÍSICA 1","Movimento"],portuguese:["🇧🇷","Português","PORTUGUÊS 1","Leitura"]};
     const mathUnits=["Números e contagem","Adição básica","Subtração básica","Multiplicação","Divisão","Tabuada e operações","Frações","Números decimais","Porcentagem","Potenciação e raízes","Expressões numéricas","Equações do 1º grau","Razão e proporção","Geometria básica","Áreas e perímetros","Equações do 2º grau","Funções e gráficos","Trigonometria","Logaritmos","Progressões","Geometria analítica","Pré-cálculo","Limites","Derivadas","Integrais","Álgebra linear","Probabilidade avançada","Cálculo universitário"];
     const subjectTopics={math:mathUnits,chess:["Peças","Movimentos","Xeque","Defesa","Estratégia"],english:units.map(x=>x[0]),spanish:["Saludos","Números","Verbos","Frases"],physics:["Movimento","Força","Energia","Matéria"],portuguese:["Leitura","Gramática","Ortografia","Interpretação"]};
